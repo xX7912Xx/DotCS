@@ -1,0 +1,4 @@
+在编译命令系统社区版前, 你应该安装 Python 3.10 和一些库.
+安装库的命令:
+    pip install psutil requests pymysql qrcode websocket-client brotli pillow rich numpy pyinstaller==4.9 mido pycryptodome
+然后运行 ./build/build.cmd 即可.
