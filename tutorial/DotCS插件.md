@@ -66,7 +66,7 @@
 
 ---
 
-### 1. 你好, 命令系统 - color函数
+### 1. "你好, 命令系统" | color 函数基础
 
 现在, 你已经了解了插件的基础信息, 让我们一起制作第一个插件吧.
 
@@ -107,7 +107,7 @@ color(text: str, output: bool = True, end: str = "\n", replace: bool = False, re
 color("你好, 命令系统.")
 ```
 
-![color1](image/DotCS插件/color1.png)
+![color_1-1](image/DotCS插件/color_1-1.png)
 
 这样就成功了.
 
@@ -117,7 +117,7 @@ color("你好, 命令系统.")
 
 ---
 
-#### 1.1. 更好地说"你好"
+#### 1.1. 更好地说"你好" | color 函数深入
 
 接下来, 我们应该用用color中的参数了
 
@@ -132,7 +132,7 @@ color("你好, 命令系统.")
 
 也就是说, 可以使用replace = True进行覆盖输出, 避免刷屏
 
-我们一步步来, 先做一个不断刷新的伪进度条试试.
+我们一步步来, 先做一个伪进度百分比显示试试.
 
 ```python
 ./plugin/progress.py
@@ -140,17 +140,53 @@ color("你好, 命令系统.")
 # PLUGIN TYPE: def
 progress = 0
 while progress < 100:
+    color("§e正在加载: "+str(progress)+"%", replace = True, info = "§e 加载 ")
     progress += 1
-    progressShow = "="*(progress//5) + " "*(20-progress//5)
-    color("§e[%s], %d%%" % (progressShow, progress), replace = True, info = "§e 加载 ")
     time.sleep(0.1)
 color("§a已完成", info = "§a 成功 ")
 ```
 
-![color2](image/DotCS插件/color2.png)
+![color_1-1-1](image/DotCS插件/color_1-1-1.png)
 
-![color3](image/DotCS插件/color3.png)
+![color_1-1-2](image/DotCS插件/color_1-1-2.jpg)
 
-怎么样.., 是不是很简单?, 让我们继续.
+怎么样.., 是不是很简单..?, 接下来我们一起更详细地了解不同插件类型以及玩家信息的判定.
 
+---
+
+### 2. "你好, 玩家. 这里是命令系统" | player message 类插件基础
+
+现在, 我们来了解怎样制作与玩家互动的插件.
+
+学习这些之前, 我们应该要知道怎样与玩家互动 (发送指令)
+
+#### 2.1 "FastBulider, 请向租赁服传达我的指令" | sendcmd 函数基础
+
+同样地, 我们来看看 sendcmd 函数的定义:
+
+```python
+sendcmd(cmd: str, waitForResponse: bool = False, timeout: float | int = 1)
+"""
+以 WebSocket 身份发送指令到租赁服的函数
+---
+
+参数:
+    cmd: str (Minecraft command) -> 要在租赁服执行的指令.
+    waitForResponse: bool -> 是否等到收到命令执行结果再返回结果.
+        False: 不等结果, 直接返回命令执行的uuid. `(一瞬间)`
+        True : 等到收到结果了再返回结果. `(需要1~2游戏刻)`
+    timeout: number -> 等待返回结果的最长时间
+
+返回:
+    `waitForResponse = False`:
+        str : 命令执行的uuid.
+    `waitForResponse = True `:
+        Dict: 命令执行的返回结果.
+
+报错:
+    TimeoutError: 等待命令执行结果超时.
+"""
+```
+
+未完待续
 ---
