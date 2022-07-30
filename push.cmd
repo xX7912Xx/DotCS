@@ -5,7 +5,7 @@ set /p branch=Please enter your branch name:
 set /p commit=Please enter your commit info: 
 echo Loading files.
 git update-index --add --chmod=+x .\build\upx\Linux_amd64\upx
-git update-index --add --chmod=+x .\build\upx\Linux_aarchc64\upx
+git update-index --add --chmod=+x .\build\upx\Linux_aarch64\upx
 git add .
 echo Setting commit.
 git commit -m "%commit%"
