@@ -160,6 +160,8 @@ color("§a已完成", info = "§a 成功 ")
 
 学习这些之前, 我们应该要知道怎样与玩家互动 (发送指令)
 
+---
+
 #### 2.1 "FastBulider, 请向租赁服传达我的指令" | sendcmd 函数基础
 
 同样地, 我们来看看 sendcmd 函数的定义:
@@ -188,5 +190,7 @@ sendcmd(cmd: str, waitForResponse: bool = False, timeout: float | int = 1)
 """
 ```
 
-未完待续
 ---
+
+未完待续
+--------
