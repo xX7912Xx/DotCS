@@ -2,23 +2,24 @@ from typing import Union, List, Dict, Tuple, Set
 
 
 
+Number = Union[int, float]
 class Point:
-    def __init__(self, X: Union[int, float], Y: Union[int, float], Z: Union[int, float]) -> None:
+    def __init__(self, X: Number, Y: Number, Z: Number) -> None:
         self.auth(X, Y, Z)
 
-    def auth(self, X: Union[int, float], Y: Union[int, float], Z: Union[int, float]) -> None:
+    def auth(self, X: Number, Y: Number, Z: Number) -> None:
         if (type(X) != int and type(X) != float) or (type(Y) != int and type(Y) != float) or (type(Z) != int and type(Z) != float): raise TypeError("unsupported operand type(s) for creating a point object: '%s', '%s', '%s'" % (type(X).__name__, type(Y).__name__, type(Z).__name__))
         self.X, self.Y, self.Z = X, Y, Z
 
-    def getCoords(self) -> Tuple[Union[int, float], Union[int, float], Union[int, float]]:
+    def getCoords(self) -> Tuple[Number, Number, Number]:
         return (self.X, self.Y, self.Z)
 
-    def moveto(self, X: Union[int, float], Y: Union[int, float], Z: Union[int, float]) -> Tuple[Union[int, float], Union[int, float], Union[int, float]]:
+    def moveto(self, X: Number, Y: Number, Z: Number) -> Tuple[Number, Number, Number]:
         originalCoord = self.getCoords()
         self.auth(X, Y, Z)
         return (X-originalCoord[0], Y-originalCoord[1], Z-originalCoord[2])
 
-    def shift(self, X: Union[int, float], Y: Union[int, float], Z: Union[int, float]) -> Tuple[Union[int, float], Union[int, float], Union[int, float]]:
+    def shift(self, X: Number, Y: Number, Z: Number) -> Tuple[Number, Number, Number]:
         X = X + self.X
         Y = Y + self.Y
         Z = Z + self.Z
@@ -28,7 +29,7 @@ class Point:
     def __str__(self) -> str:
         return "a point at (%s, %s, %s)" % self.getCoords()
 
-    def __sub__(self, other) -> Union[int, float]:
+    def __sub__(self, other) -> Number:
         if type(other) != Point:
             raise TypeError("unsupported operand type(s) for -: 'Point' and '%s'" % type(other).__name__)
         return ((self.X-other.X)**2 + (self.Y-other.Y)**2 + (self.Z-other.Z)**2)**0.5
@@ -48,10 +49,10 @@ class Line:
         if start == end: raise Exception("It is not a line.")
         self.startPoint, self.endPoint = start, end
 
-    def getCoords(self) -> Tuple[Tuple[Union[int, float], Union[int, float], Union[int, float]], Tuple[Union[int, float], Union[int, float], Union[int, float]]]:
+    def getCoords(self) -> Tuple[Tuple[Number, Number, Number], Tuple[Number, Number, Number]]:
         return (self.startPoint.getCoords(), self.endPoint.getCoords())
 
-    def getLength(self, axis: Union[str, None] = None) -> Union[int, float]:
+    def getLength(self, axis: Union[str, None] = None) -> Number:
         if not axis:
             return ((self.startPoint.X-self.endPoint.X)**2 + (self.startPoint.Y-self.endPoint.Y)**2 + (self.startPoint.Z-self.endPoint.Z)**2)**0.5
         if axis == "X":
@@ -81,13 +82,13 @@ class Cube:
             if i[0] == i[1]: raise Exception("It is not a cube.")
         self.startPoint, self.endPoint = Point(startX, startY, startZ), Point(endX, endY, endZ)
 
-    def getCoords(self) -> Tuple[Tuple[Union[int, float], Union[int, float], Union[int, float]], Tuple[Union[int, float], Union[int, float], Union[int, float]]]:
+    def getCoords(self) -> Tuple[Tuple[Number, Number, Number], Tuple[Number, Number, Number]]:
         return (self.startPoint.getCoords(), self.endPoint.getCoords())
 
-    def getSize(self) -> Tuple[Union[int, float], Union[int, float], Union[int, float]]:
+    def getSize(self) -> Tuple[Number, Number, Number]:
         return (self.endPoint.X-self.startPoint.X, self.endPoint.Y-self.startPoint.Y, self.endPoint.Z-self.startPoint.Z)
 
-    def getLength(self, axis) -> Union[int, float]:
+    def getLength(self, axis) -> Number:
         if axis == "X":
             return self.endPoint.X-self.startPoint.X
         if axis == "Y":
@@ -96,18 +97,18 @@ class Cube:
             return self.endPoint.Z-self.startPoint.Z
         raise Exception("You can only get the length of X, Y or Z.")
 
-    def getVolume(self) -> Union[int, float]:
+    def getVolume(self) -> Number:
         return self.getLength(axis = "X") * self.getLength(axis = "Y") * self.getLength(axis = "Z")
 
     def __str__(self) -> str:
         return "a cube starting at %s, ending at %s" % self.getCoords()
 
-    def  __contains__(cube, point: Point) -> bool:
+    def  __contains__(cube: "Cube", point: Point) -> bool:
         if type(point) != Point:
             raise TypeError("unsupported operand type(s) for in: '%s' and 'Cube'" % point.__class__.__name__)
         return True if ((cube.startPoint.X <= point.X <= cube.endPoint.X) and (cube.startPoint.Y <= point.Y <= cube.endPoint.Y) and (cube.startPoint.Z <= point.Z <= cube.endPoint.Z)) else False
 
-    def __and__(cube1, cube2):
+    def __and__(cube1: "Cube", cube2: "Cube") -> "Cube":
         if type(cube2) != Cube:
             raise TypeError("unsupported operand type(s) for &: 'Cube' and '%s'" % cube2.__class__.__name__)
         minimumBoundingCube = Cube(Point(min(cube1.startPoint.X, cube2.startPoint.X), min(cube1.startPoint.Y, cube2.startPoint.Y), min(cube1.startPoint.Z, cube2.startPoint.Z)), Point(max(cube1.endPoint.X, cube2.endPoint.X), max(cube1.endPoint.Y, cube2.endPoint.Y), max(cube1.endPoint.Z, cube2.endPoint.Z)))
