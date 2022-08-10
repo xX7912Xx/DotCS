@@ -4,10 +4,11 @@ from typing import Union, List, Dict, Tuple, Set
 
 Number = Union[int, float]
 class Point:
-    def __init__(self, X: Number, Y: Number, Z: Number) -> None:
+    def __init__(self, X: Number, Y: Number = None, Z: Number = None) -> None:
         self.auth(X, Y, Z)
 
     def auth(self, X: Number, Y: Number, Z: Number) -> None:
+        if (type(X) == tuple or type(X) == list) and (len(X) == 3): X, Y, Z = X
         if (type(X) != int and type(X) != float) or (type(Y) != int and type(Y) != float) or (type(Z) != int and type(Z) != float): raise TypeError("unsupported operand type(s) for creating a point object: '%s', '%s', '%s'" % (type(X).__name__, type(Y).__name__, type(Z).__name__))
         self.X, self.Y, self.Z = X, Y, Z
 
@@ -15,14 +16,17 @@ class Point:
         return (self.X, self.Y, self.Z)
 
     def moveto(self, X: Number, Y: Number, Z: Number) -> Tuple[Number, Number, Number]:
-        originalCoord = self.getCoords()
+        if X == "~": X = self.X
+        if Y == "~": Y = self.Y
+        if Z == "~": Z = self.Z
         self.auth(X, Y, Z)
+        originalCoord = self.getCoords()
         return (X-originalCoord[0], Y-originalCoord[1], Z-originalCoord[2])
 
     def shift(self, X: Number, Y: Number, Z: Number) -> Tuple[Number, Number, Number]:
-        X = X + self.X
-        Y = Y + self.Y
-        Z = Z + self.Z
+        X = self.X if X == "~" else (X + self.X)
+        Y = self.Y if Y == "~" else (Y + self.Y)
+        Z = self.Z if Z == "~" else (Z + self.Z)
         self.auth(X, Y, Z)
         return (X, Y, Z)
 
