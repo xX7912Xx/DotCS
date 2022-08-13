@@ -16,10 +16,9 @@ DotCS Dev要求您年满14岁, 并且拥有电脑或手机的基本操作能力.
 
 **如您自主选择同意协议或开始使用DotCS, 则视为您已充分理解协议, 并同意作为协议的一方当事人接受本协议以及其他使用DotCS相关的协议的约束.**
 
-[QQ群: 467443403](https://jq.qq.com/?_wv=1027\&k=BJCGOPCG)
-[QQ频道](https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=1W6Vpn5&businessType=9&from=181074&biz=ka&shareSource=5)
-[Telegram频道](https://t.me/MCDot)
-[CberGit论坛专区](https://cbergit.com/categories/dotcs.17/)
+[QQ群: 833303126](https://jq.qq.com/?_wv=1027&k=fHr6wRbi)
+
+[CberGit 论坛专区](https://cbergit.com/categories/dotcs.17/)
 
 ---
 
@@ -27,14 +26,19 @@ DotCS Dev要求您年满14岁, 并且拥有电脑或手机的基本操作能力.
 
 1. DotCS软件介绍:
 
-   * DotCS Community (下文简称社区版), **注册账户需要0.01CNY**, [社区版开源地址](http://www.dotcs.community/code/)
-     以下为社区版使用的 **非Python自带或pip下载的库 和 第三方代码**, 均获得其作者许可.
+   * DotCS Community (下文简称社区版), **价格: 免费**, [社区版开源地址](http://www.dotcs.community/code/)
+     以下为社区版使用的 **[非 (Python自带或pip下载) 的库] 和 第三方代码**, 均获得其作者许可.
 
      > * bdx_work_shop, 作者: 2401, [开源地址](https://github.com/CMA2401PT/BDXWorkShop)
+     >
      > * FastBuilder connector (./proxy 目录下的全部文件), 作者: 2401, [开源地址](https://github.com/LNSSPsd/PhoenixBuilder/tree/main/fastbuilder/external)
+     >
      > * TDES encrypt, 作者: 7912
      >
-   * DotCS Professional (下文简称Pro版), **注册账户需要50CNY**.
+     > * Space Rectangular Coordinate System, 作者: 7912
+     >
+
+   * DotCS Professional (下文简称Pro版), **价格: 50CNY**.
 
    > 其中, 社区版由 **7912** 开发, Pro版由 **art** 开发, 两版之代码形式及架构等有很大不同, 两版之营利无关联, **您可视社区版和Pro版为两款功能类似的不同软件.**
    >
@@ -151,12 +155,7 @@ DotCS Dev要求您年满14岁, 并且拥有电脑或手机的基本操作能力.
 1. 开发组除以下场合外不向第三者提供您的个人信息.
    * 经法律要求
 2. 会收集的信息:
-   * 您的 FastBuilder 用户名和机器人名.
-   * 您的 DotCS 账号的注册时间.
-   * 您的 QQ 号码 (仅Pro收集)
-   * 您的 邮箱 (仅Pro收集)
-   * 您的 租赁服号, 租赁服实时人数 (仅Pro收集, 社区版计划在将来收集)
-   * 您的 实时ip地址信息 (仅Pro收集)
+   * 暂无.
 3. 绝对不会收集的信息
    * 您的 FastBuilder 账号的密码
    * 您的 FastBuilder 账号的fbtoken
