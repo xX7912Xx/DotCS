@@ -20,7 +20,8 @@ __main__.plugin_function.sendcmd(cmd, waitForResponse: bool = False, timeout: fl
 此方式为异步调用,例:(下面均是在异步函数内运行的,后面没声明是同步的默认异步)
 ```python
 function_cmd = __main__.plugin_function
-await function_cmd.sendcmd("/say 你好,世界")
+await d = function_cmd.sendcmd("/say 你好,世界")
+print(d)
 ```
 
 
@@ -37,6 +38,13 @@ __main__.plugin_function.sendwscmd(cmd, waitForResponse: bool = False,get_return
 > 
 > get_return: 是否等待返回结果,bool类型,此参数默认为 False,此时返回的值会根据启动参数模式的影响并变化,并且返回值无意义
 
+此方式为异步调用,例:
+```python
+function_cmd = __main__.plugin_function
+await d = function_cmd.sendwscmd("/say 你好,世界")
+print(d)
+```
+
 ## sendmulticmd
 ```python
 __main__.plugin_function.sendmulticmd(cmds: list[str], waitForResponse: bool = False, timeout: float | int = 1,get_return:bool=False)
@@ -51,6 +59,13 @@ __main__.plugin_function.sendmulticmd(cmds: list[str], waitForResponse: bool = F
 > 
 > get_return: 是否等待返回结果,bool类型,此参数默认为 False,此时返回的值会根据启动参数模式的影响并变化,并且返回值无意义
 
+此方式为异步调用,例:
+```python
+function_cmd = __main__.plugin_function
+await d = function_cmd.sendmulticmd(["/say 你好,世界","/say 你不好"])
+for i in d:
+    print(i)
+```
 # 类
 
 
