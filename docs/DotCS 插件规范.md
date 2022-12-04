@@ -54,7 +54,7 @@ class __init__(__main__.plugin):
     __update_url__          = None # 更新链接,默认值是 None
     __license_agreement__   = "见帮助文档" # 许可协议,默认值: "见帮助文档" 
     
-    def __init__(self,Name:str,Version:str,Mode:int):# 初始化操作函数!!!
+    async def __init__(self,Name:str,Version:str,Mode:int):# 初始化操作函数!!!
         # 上述参数均是写死的模板!!!
         # Name:用户名
         # Version: DotCS 版本
@@ -64,7 +64,7 @@ class __init__(__main__.plugin):
         pass
     
     # 下面是监听 IDText 数据包的示范
-    def IDText(self,packets):#传递的是解析后的dump对象
+    async def IDText(self,packets):#传递的是解析后的dump对象
         # 参数格式是固定的.
         if packets.TextType ==8:
             function_cmd.sendcmd("Hello World")
