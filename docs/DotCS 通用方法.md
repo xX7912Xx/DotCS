@@ -152,26 +152,27 @@ class __init__(__main__.plugin):
     async def player_left(self,player):
         # 玩家离开服务器事件
         # player:玩家名
+        # title:    网易称号(如果没有就是"")
         pass
 
-    async def Dll_Mode_player_left(self,player):
+    async def Dll_Mode_player_left(self,player,title):
         # 玩家离开服务器事件
         # player:玩家名
         # 在 DotCS Go 启动模式为 时所运行的函数
+        # title:    网易称号(如果没有就是"")
         pass
-    async def Omega_Mode_player_left(self,player):
+    async def Omega_Mode_player_left(self,player,title):
         # 玩家离开服务器事件
         # player:玩家名
         # 在 DotCS Go 启动模式为 时所运行的函数
+        # title:    网易称号(如果没有就是"")
         pass
-    async def Node_js_player_left(self,player):
+    async def Node_js_player_left(self,player,title):
         # 玩家离开服务器事件
         # player:玩家名
         # 在 DotCS Go 启动模式为 时所运行的函数
+        # title:    网易称号(如果没有就是"")
         pass
-
-
-
 
 
 
