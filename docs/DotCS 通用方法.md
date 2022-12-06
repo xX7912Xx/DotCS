@@ -115,6 +115,38 @@ class __init__(__main__.plugin):
     
     # 事件运行函数
 
+    async def player_say(self,player,msg,title):
+        # 在玩家说话时执行的数据包,其中参数如下
+        # player:   玩家名
+        # msg:      消息
+        # title:    网易称号(如果没有就是"")
+        pass
+
+    async def Dll_Mode_player_say(self,player,msg,title):
+        # 在 DotCS Go 启动模式为 DLL链接模式 时所运行的函数(建议不要执行有关其他插件的操作,以免 bug 发生)
+        # 在玩家说话时执行的数据包,其中参数如下
+        # player:   玩家名
+        # msg:      消息
+        # title:    网易称号(如果没有就是"")
+        pass
+
+    async def Omega_Mode_player_say(self,player,msg,title):
+        # 在 DotCS Go 启动模式为 omega 旁加载模式 时所运行的函数(建议不要执行有关其他插件的操作,以免 bug 发生)
+        # 在玩家说话时执行的数据包,其中参数如下
+        # player:   玩家名
+        # msg:      消息
+        # title:    网易称号(如果没有就是"")
+        pass
+
+    async def Node_js_Mode_player_say(self,player,msg,title):
+        # 在 DotCS Go 启动模式为 FBv8js 加载模式 时所运行的函数(建议不要执行有关其他插件的操作,以免 bug 发生)
+        # 在玩家说话时执行的数据包,其中参数如下
+        # player:   玩家名
+        # msg:      消息
+        # title:    网易称号(如果没有就是"")
+        pass    
+
+
 
 
     
