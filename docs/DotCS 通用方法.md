@@ -175,6 +175,47 @@ class __init__(__main__.plugin):
         pass
 
 
+    async def op(self,player,title):
+        # 指定玩家获得了游戏 op 事件
+        # player    :   游戏名
+        # title     :   网易称号(如果没有就行"")
+        pass
+
+    async def Dll_Mode_op(self,player,title):
+        # 指定玩家获得了游戏 op 事件
+        # player    :   游戏名
+        # title     :   网易称号(如果没有就行"")
+        
+        # 在 DotCS Go 启动模式为 时所运行的函数
+        pass
+    async def Omega_Mode_op(self,player,title):
+        # 指定玩家获得了游戏 op 事件
+        # player    :   游戏名
+        # title     :   网易称号(如果没有就行"")
+        
+        # 在 DotCS Go 启动模式为 时所运行的函数
+        pass
+    async def Node_js_op(self,player,title):
+        # 指定玩家获得了游戏 op 事件
+        # player    :   游戏名
+        # title     :   网易称号(如果没有就行"")
+        
+        # 在 DotCS Go 启动模式为 时所运行的函数
+        pass
+
+
+    # 模板
+    async def Dll_Mode_
+        # 在 DotCS Go 启动模式为 时所运行的函数
+        pass
+    async def Omega_Mode_
+        # 在 DotCS Go 启动模式为 时所运行的函数
+        pass
+    async def Node_js_
+        # 在 DotCS Go 启动模式为 时所运行的函数
+        pass
+
+
 
 
 
