@@ -18,8 +18,11 @@ class __init__(__main__.plugin):
         pass
     
     # 下面是监听 IDText 数据包的示范
-    async def IDText(self,packets:dict):#传递的是解析后的dump对象
-        # 参数格式是固定的.
-        print("数据包:",packets)
-        if packets['TextType'] !=8:
-            await function_cmd.sendcmd("""tellraw %s {"rawtext":[{"text":"%s"}]}""" % ("@a",f"""§l§7[§b{packets['TextType']}§7] §7[§d{packets['SourceName']}§7]§r {packets["Message"]}"""))
+    #async def IDText(self,packets:dict):#传递的是解析后的dump对象
+    #    # 参数格式是固定的.
+    #    # print("数据包:",packets)
+    #    if packets['TextType'] !=8:
+    #    await function_cmd.sendcmd("""tellraw %s {"rawtext":[{"text":"%s"}]}""" % ("@a",f"""§l§7[§b{packets['TextType']}§7] §7[§d{packets['SourceName']}§7]§r {packets["Message"]}"""))
+
+    # async def player_say(self,player,msg,title):
+    #     await function_cmd.sendcmd("""tellraw %s {"rawtext":[{"text":"%s"}]}""" % ("@a",f"""§l§7[§b{title.replace('"', '’’').replace("'", '’').replace('"', '’’').replace("'", '’')}§7] §7[§d{player}§7]§r {msg}"""))
