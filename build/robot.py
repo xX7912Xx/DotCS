@@ -1,46 +1,5 @@
-title1 = \
-"""
-  ____        _    ____ ____     ____                                      _ _         
- |  _ \  ___ | |_ / ___/ ___|   / ___|___  _ __ ___  _ __ ___  _   _ _ __ (_) |_ _   _ 
- | | | |/ _ \| __| |   \___ \  | |   / _ \| '_ ` _ \| '_ ` _ \| | | | '_ \| | __| | | |
- | |_| | (_) | |_| |___ ___) | | |__| (_) | | | | | | | | | | | |_| | | | | | |_| |_| |
- |____/ \___/ \__|\____|____/   \____\___/|_| |_| |_|_| |_| |_|\__,_|_| |_|_|\__|\__, |
-                                                                                 |___/ 
-"""
-title4 = \
-"""
-┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-|                                                                                                            |
-|                                                                                                            |
-|    DDDDDDDDDDDDD                                  tttt                 CCCCCCCCCCCCC   SSSSSSSSSSSSSSS     |
-|    D::::::::::::DDD                            ttt:::t              CCC::::::::::::C SS:::::::::::::::S    |
-|    D:::::::::::::::DD                          t:::::t            CC:::::::::::::::CS:::::SSSSSS::::::S    |
-|    DDD:::::DDDDD:::::D                         t:::::t           C:::::CCCCCCCC::::CS:::::S     SSSSSSS    |
-|      D:::::D    D:::::D    ooooooooooo   ttttttt:::::ttttttt    C:::::C       CCCCCCS:::::S                |
-|      D:::::D     D:::::D oo:::::::::::oo t:::::::::::::::::t   C:::::C              S:::::S                |
-|      D:::::D     D:::::Do:::::::::::::::ot:::::::::::::::::t   C:::::C               S::::SSSS             |
-|      D:::::D     D:::::Do:::::ooooo:::::otttttt:::::::tttttt   C:::::C                SS::::::SSSSS        |
-|      D:::::D     D:::::Do::::o     o::::o      t:::::t         C:::::C                  SSS::::::::SS      |
-|      D:::::D     D:::::Do::::o     o::::o      t:::::t         C:::::C                     SSSSSS::::S     |
-|      D:::::D     D:::::Do::::o     o::::o      t:::::t         C:::::C                          S:::::S    |
-|      D:::::D    D:::::D o::::o     o::::o      t:::::t    ttttttC:::::C       CCCCCC            S:::::S    |
-|    DDD:::::DDDDD:::::D  o:::::ooooo:::::o      t::::::tttt:::::t C:::::CCCCCCCC::::CSSSSSSS     S:::::S    |
-|    D:::::::::::::::DD   o:::::::::::::::o      tt::::::::::::::t  CC:::::::::::::::CS::::::SSSSSS:::::S    |
-|    D::::::::::::DDD      oo:::::::::::oo         tt:::::::::::tt    CCC::::::::::::CS:::::::::::::::SS     |
-|    DDDDDDDDDDDDD           ooooooooooo             ttttttttttt         CCCCCCCCCCCCC SSSSSSSSSSSSSSS       |
-|                                                                                                            |
-|                                                                                                            |
-|                                                                                                            |
-|                           ____                                      _ _                                    |
-|                          / ___|___  _ __ ___  _ __ ___  _   _ _ __ (_) |_ _   _                            |
-|                         | |   / _ \| '_ ` _ \| '_ ` _ \| | | | '_ \| | __| | | |                           |
-|                         | |__| (_) | | | | | | | | | | | |_| | | | | | |_| |_| |                           |
-|                          \____\___/|_| |_| |_|_| |_| |_|\__,_|_| |_|_|\__|\__, |                           |
-|                                                                           |___/                            |
-└────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-                  艺术字来源: http://patorjk.com/software/taag/#p=testall&t=DotCS%20Community                  
-"""
-print("\n"*30 + "http://www.dotcs.community/")
+import dotcs_ex
+print("\n"*30 + "http://www.mcppl.art/")
 threadList = []
 exiting = False
 exitDelay = 3
@@ -51,114 +10,20 @@ try:
     """""""""
     DEF PART
     """""""""
-    def removeColorInText(text):
-        return text.replace("\033[0;37;34m", "").replace("\033[0;37;32m", "").replace("\033[0;37;36m", "").replace("\033[0;37;31m", "").replace("\033[0;37;35m", "").replace("\033[0;37;33m", "").replace("\033[0;37;90m", "").replace("\033[0;37;2m", "").replace("\033[0;37;94m", "").replace("\033[0;37;92m", "").replace("\033[0;37;96m", "").replace("\033[0;37;91m", "").replace("\033[0;37;95m", "").replace("\033[0;37;93m", "").replace("\033[0;37;1m", "").replace("\033[0m", "").replace("\033[7;37;34m", "").replace("\033[7;37;32m", "").replace("\033[7;37;36m", "").replace("\033[7;37;31m", "").replace("\033[7;37;35m", "").replace("\033[7;37;33m", "").replace("\033[7;37;90m", "").replace("\033[7;37;2m", "").replace("\033[7;37;94m", "").replace("\033[7;37;92m", "").replace("\033[7;37;96m", "").replace("\033[7;37;91m", "").replace("\033[7;37;95m", "").replace("\033[7;37;93m", "").replace("\033[7;37;1m", "")
 
-
-    def getTextColorInTheEnd(text):
-        if "\033[" in text and "m" in text:
-            return "\033[" + text.split("\033[")[-1].split("m")[0] + "m"
-        else:
-            return "\033[0m"
 
 
     lastOutputLen = 0
     lastReplace = False
     lastReplaceByNext = False
     print_Py = print
-    def color(text: str, output: bool = True, end: str = "\n", replace: bool = False, replaceByNext: bool = False, info = " 信息 ") -> str:
-        """
-        在命令系统控制台输出信息
-        ---
 
-        参数:
-            text: str -> 要输出的内容.
-            output: bool -> 是否输出.
-            end: str -> 输出时末尾的字符, 同print()中的.
-            replace: bool -> 是否被下次输出覆盖.
-                True: 若下次输出时 replace还是为True, 则这次输出将被下次输出覆盖, 否则不会被覆盖.
-                False: 普通的输出.
-            replaceByNext: bool -> 是否一定被下次输出覆盖.
-                True : 这次输出将被下次输出覆盖.
-                False: 普通的输出.
-            info: str -> 输出内容前的反色信息.
+    print = dotcs_ex.color.color
+    color = dotcs_ex.color.color
+    removeColorInText = dotcs_ex.color.removeColorInText
+    getTextColorInTheEnd = dotcs_ex.color.getTextColorInTheEnd
 
-        返回: str -> 输出
-        """
-        global lastOutputLen, lastReplace, lastReplaceByNext
-        if replaceByNext:
-            replace = True
-        if type(text) != str:
-            text = str(text)
-        if text[-1] == "\n" and "Traceback" in text:
-            text = text[:-1]
-        if text.startswith("§"):
-            text = text.replace("\n", "\n" + text[0:2])
-        text = text.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace("§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m"
-        if info:
-            info = info.replace("§1", "\033[7;37;34m").replace("§2", "\033[7;37;32m").replace("§3", "\033[7;37;36m").replace("§4", "\033[7;37;31m").replace("§5", "\033[7;37;35m").replace("§6", "\033[7;37;33m").replace("§7", "\033[7;37;90m").replace("§8", "\033[7;37;2m").replace("§9", "\033[7;37;94m").replace("§a", "\033[7;37;92m").replace("§b", "\033[7;37;96m").replace("§c", "\033[7;37;91m").replace("§d", "\033[7;37;95m").replace("§e", "\033[7;37;93m").replace("§f", "\033[7;37;1m").replace("§r", "\033[0m")+"\033[0m "
-            textNew = text.split("\n")
-            for i in range(len(textNew)):
-                if i == 0:
-                    if not info.startswith("\033["):
-                        textNew[i] = "\033[7m" + info + textNew[i]
-                    else:
-                        textNew[i] = info + textNew[i]
-                else:
-                    textColor = getTextColorInTheEnd(textNew[i-1])
-                    if not info.startswith("\033["):
-                        textNew[i] = textColor.replace("\033[0", "\033[7") + info + textColor + textNew[i]
-                    else:
-                        textNew[i] = info + textColor + textNew[i]
-            text = "\n".join(textNew)
-            del textNew
-        timeInfo = "[%s] " % datetime.datetime.now().strftime("%H:%M:%S")
-        text = timeInfo + text.replace("\n", "\n" + timeInfo)
-        if output:
-            if replace:
-                text = "\r"+text+" "*(lastOutputLen-(len(removeColorInText(text))+(len(removeColorInText(text).encode())-len(removeColorInText(text)))//2))
-                end = ""
-                lastReplace = True
-            else:
-                if lastReplace:
-                    if lastReplaceByNext:
-                        text = "\r"+text+" "*(lastOutputLen-(len(removeColorInText(text))+(len(removeColorInText(text).encode())-len(removeColorInText(text)))//2))
-                    else:
-                        text = "\n"+text
-                    lastReplace = False
-            if replaceByNext:
-                lastReplaceByNext = True
-            else:
-                lastReplaceByNext = False
-            print_Py(text, end = end)
-            l = removeColorInText(text).replace("\r", "").split("\n")[-1]
-            if l:
-                while l[-1] == " ":
-                    l = l[:-1]
-            lastOutputLen = len(l)+(len(l.encode())-len(l))//2
-        else:
-            return text
-    print = color
-
-    def countdown(delay: int | float, msg: str = None) -> None:
-        """
-        控制台显示倒计时的函数
-
-        参数:
-            delay: int | float -> 倒计时时间(秒)
-            msg: str -> 倒计时运行时显示的说明
-        返回: 无返回值
-        """
-        if msg is None:
-            msg = "Countdown"
-        delayStart = time.time()
-        delayStop = delayStart+delay
-        while delay >= 0.01:
-            delay = delayStop-time.time()
-            color("%s: %.2fs" % (msg, delay), replace = True, replaceByNext = True, info = "§e 等待 ")
-            time.sleep(0.01)
-
-
+    countdown = dotcs_ex.tool.countdown
     def exitChatbarMenu(killFB: bool = True, delay: int | float = 3, reason: str = None, force = False) -> None:
         """
         退出命令系统的函数
@@ -182,8 +47,6 @@ try:
         exitReason = reason
         exiting = True
         raise SystemExit(0)
-
-
     try:
         import os
         pid = os.getpid()
@@ -194,7 +57,7 @@ try:
         # pip 可下载到的库.
         # pip freeze>modules.txt
         # pip uninstall -r modules.txt -y
-        # pip install psutil requests pymysql qrcode websocket-client brotli pillow rich numpy pyinstaller==4.9 mido pycryptodome
+        # pip install psutil requests pymysql qrcode websocket-client brotli pillow rich numpy pyinstaller mido pycryptodome
         import psutil, requests, pymysql, qrcode, websocket, brotli, PIL, rich.console, Crypto.Cipher.DES3
         # 第三方库.
         PyPIthird = [
@@ -375,6 +238,7 @@ try:
         检测命令系统更新的函数, 若有更新则自动下载
         你不应该使用此函数, 命令系统会在启动时运行一次, 启动成功后每60s运行一次
         """
+        return True
         if not(connected):
             color("§e正在检查更新, 当前版本: %s" % version, info = "§e 信息 ")
         try:
@@ -1755,7 +1619,7 @@ try:
       RUNNING PART
     """""""""""""""
     if __name__ == "__main__":
-        version = "v0.10.10" # 设置版本号
+        version = dotcs_ex.date.date.version # 设置版本号
         timeStartRun = time.time() # 记录启动时间
         FBip = "127.0.0.1"
         FBport = 8000
@@ -1766,10 +1630,14 @@ try:
         faststart = getStatus("faststart")
         if not faststart:
             countdown(0.1, "§e命令系统即将开始启动")
+        
+        _config = dotcs_ex.config.init.config("config.json")
+        _config.append_function(dotcs_ex.config.update_server.update_server)
+        _config.init()
+        config = _config.get_return()
 
         # color(title4)
-        color('§b".命令"系统社区版 - 租赁服聊天栏菜单\n".Dot" Command System Community(DotCS)\nDotCS基于FastBuilder.\n社区版作者: 7912\n其官方插件作者: 7912, Pomelo', info = "§b 信息 ")
-        color('§b用户交流群: 833303126', info = "§b 信息 ")
+        dotcs_ex.welcome.welcome()
         if not faststart:
             countdown(3, "§e请阅读说明")
 
