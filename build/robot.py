@@ -1564,6 +1564,7 @@ try:
             self.stopping = False
             self.daemon = True
             self.output = output
+            self.setDaemon(True)
             threadList.append(self)
             self.start()
 

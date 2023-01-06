@@ -8,6 +8,8 @@ from . import warning
 from . import error
 from . import config
 from . import system
+from . import _error
+from . import game
 def input_bool(text:str)-> bool:
     "获取输入并自动判断,输入值为 Y 或 y 时 返回 True"
     return color_input(text) in ["Y","y"]

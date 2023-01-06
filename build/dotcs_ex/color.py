@@ -2,28 +2,104 @@ from typing import Literal, TextIO
 import datetime
 import sys
 import re
+import flashtext
 from . import mc_color
 from . import warning
 from . import error
 from . import color_input
 import sys
-def _color(text: str, output: bool = True, end: str = "\n", replace: bool = False, replaceByNext: bool = False, info = " 信息 "):
-        """
-    在控制台输出彩色文本的函数
+
+import numpy as np
+lastOutputLen = 0
+replace_mc_color = flashtext.KeywordProcessor()
+replace_mc_color.add_keyword('New Delhi', 'NCR region')
+
+
+def old_color(text: str, output: bool = True, end: str = "\n", replace: bool = False, replaceByNext: bool = False, info=" 信息 ") -> str:
+    """
+    在命令系统控制台输出信息
+    ---
     参数:
-        text: str -> 要输出的信息
-        end: str -> 结尾字符串,默认\\n
+        text: str -> 要输出的内容.
+        output: bool -> 是否输出.
+        end: str -> 输出时末尾的字符, 同print()中的.
+        replace: bool -> 是否被下次输出覆盖.
+            True: 若下次输出时 replace还是为True, 则这次输出将被下次输出覆盖, 否则不会被覆盖.
+            False: 普通的输出.
+        replaceByNext: bool -> 是否一定被下次输出覆盖.
+            True : 这次输出将被下次输出覆盖.
+            False: 普通的输出.
+        info: str -> 输出内容前的反色信息.
     返回: str -> 输出
     """
-        try:
-            mc_color.color(text=text, output=output, end=end, replace=replace, replaceByNext=replaceByNext, info=info)
-        except Warning as err:
-            warning(err)
-        except Exception as err:
-            error(err)
+    if replaceByNext:
+        replace = True
+    if type(text) != str:
+        text = str(text)
+    if text[-1] == "\n" and "Traceback" in text:
+        text = text[:-1]
+    if text.startswith("§"):
+        text = text.replace("\n", "\n" + text[0:2])
+    text = text.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
+        "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m"
+    if info:
+        info = info.replace("§1", "\033[7;37;34m").replace("§2", "\033[7;37;32m").replace("§3", "\033[7;37;36m").replace("§4", "\033[7;37;31m").replace("§5", "\033[7;37;35m").replace("§6", "\033[7;37;33m").replace("§7", "\033[7;37;90m").replace("§8", "\033[7;37;2m").replace(
+            "§9", "\033[7;37;94m").replace("§a", "\033[7;37;92m").replace("§b", "\033[7;37;96m").replace("§c", "\033[7;37;91m").replace("§d", "\033[7;37;95m").replace("§e", "\033[7;37;93m").replace("§f", "\033[7;37;1m").replace("§r", "\033[0m")+"\033[0m "
+        textNew = text.split("\n")
+        for i in range(len(textNew)):
+            if i == 0:
+                if not info.startswith("\033["):
+                    textNew[i] = "\033[7m" + info + textNew[i]
+                else:
+                    textNew[i] = info + textNew[i]
+            else:
+                textColor = getTextColorInTheEnd(textNew[i-1])
+                if not info.startswith("\033["):
+                    textNew[i] = textColor.replace(
+                        "\033[0", "\033[7") + info + textColor + textNew[i]
+                else:
+                    textNew[i] = info + textColor + textNew[i]
+        text = "\n".join(textNew)
+        del textNew
+    timeInfo = "[%s] " % datetime.datetime.now().strftime("%H:%M:%S")
+    text = timeInfo + text.replace("\n", "\n" + timeInfo)
+    if output:
+        if replace:
+            text = "\r"+text+" "*(lastOutputLen-(len(removeColorInText(text))+(
+                len(removeColorInText(text).encode())-len(removeColorInText(text)))//2))
+            end = ""
+        print(text, end=end)
+        l = removeColorInText(text).replace("\r", "").split("\n")[-1]
+        if l:
+            while l[-1] == " ":
+                l = l[:-1]
+    else:
+        return text
+
+
+def _color(text: str, output: bool = True, end: str = "\n", replace: bool = False, replaceByNext: bool = False, info=" 信息 "):
+    """
+在控制台输出彩色文本的函数
+参数:
+    text: str -> 要输出的信息
+    end: str -> 结尾字符串,默认\\n
+返回: str -> 输出
+"""
+    try:
+        mc_color.color(text=text, output=output, end=end,
+                       replace=replace, replaceByNext=replaceByNext, info=info)
+    except Warning as err:
+        warning(err)
+    except Exception as err:
+        error(err)
+
 
 def removeColorInText(text):
     return text.replace("\033[0;37;34m", "").replace("\033[0;37;32m", "").replace("\033[0;37;36m", "").replace("\033[0;37;31m", "").replace("\033[0;37;35m", "").replace("\033[0;37;33m", "").replace("\033[0;37;90m", "").replace("\033[0;37;2m", "").replace("\033[0;37;94m", "").replace("\033[0;37;92m", "").replace("\033[0;37;96m", "").replace("\033[0;37;91m", "").replace("\033[0;37;95m", "").replace("\033[0;37;93m", "").replace("\033[0;37;1m", "").replace("\033[0m", "").replace("\033[7;37;34m", "").replace("\033[7;37;32m", "").replace("\033[7;37;36m", "").replace("\033[7;37;31m", "").replace("\033[7;37;35m", "").replace("\033[7;37;33m", "").replace("\033[7;37;90m", "").replace("\033[7;37;2m", "").replace("\033[7;37;94m", "").replace("\033[7;37;92m", "").replace("\033[7;37;96m", "").replace("\033[7;37;91m", "").replace("\033[7;37;95m", "").replace("\033[7;37;93m", "").replace("\033[7;37;1m", "")
+
+
+def removeColorMC(text):
+    return text.replace("§0", "\033[0;37;30m").replace("§1", "").replace("§2", "").replace("§3", "").replace("§4", "").replace("§5", "").replace("§6", "").replace("§7", "").replace("§8", "").replace("§9", "").replace("§a", "").replace("§b", "").replace("§c", "").replace("§d", "").replace("§e", "").replace("§f", "m").replace("§r", "")
 
 
 def getTextColorInTheEnd(text):
@@ -33,7 +109,7 @@ def getTextColorInTheEnd(text):
         return "\033[0m"
 
 
-def color(*values, output: bool = True, end: str = '\n', replace: bool = False, replaceByNext: bool = False, info:str | bool=" 信息 ", sep=' ', file: TextIO = sys.stdout, flush=False,word_wrapping : bool = True,text=None, **date) -> None | str:
+def color(*values, output: bool = True, end: str = '\n', replace: bool = False, replaceByNext: bool = False, info: str | bool = " 信息 ", sep=' ', file: TextIO = sys.stdout, flush=False, word_wrapping: bool = True, text: str = None, is_time: bool = True, end_not_replace: bool = False, no_color: int = 0, title_time: str = "[%H:%M:%S] ", **date) -> None | str:
     """
     在命令系统控制台输出信息
     默认情况下，将值打印到流或 sys.stdout。可选关键字参数：
@@ -55,55 +131,70 @@ def color(*values, output: bool = True, end: str = '\n', replace: bool = False, 
         info: str -> 输出内容前的反色信息.(默认使用 文本的第一个彩色字符)
         flush: 是否强制冲刷流(如果output值为 True,则会在 end 输出后执行)
         word_wrapping : bool -> 是否自动换行输出(会将所有的\n进行处理)(默认为 True)
+        is_time : 是否在终端显示时间(默认为 False)
+        end_not_replace : 输出的内容结尾是否不添加彩色字的重置符(默认False)
+        no_color : 是否直接移除彩色字的效果(默认值为0)
+            0 : 不移除
+            1 : 只移除 info 
+            2 : 只移除 values
+            3 : 都移除
+        title_time: 格式化时间 ,默认值 "[%H:%M:%S] "
     返回: None | str
     """
     if text:
-        return color(text,output=output,end=end,replace=replace,replaceByNext=replaceByNext,info=info,sep=sep,file=file,flush=flush,word_wrapping=word_wrapping,text=None,**date)
+        return color(text, output=output, end=end, replace=replace, replaceByNext=replaceByNext, info=info, sep=sep, file=file, flush=flush, word_wrapping=word_wrapping, text=None, **date)
     if replaceByNext:
         replace = True
     _values = []
+    if replace:
+        _values.append("\n")
+        end = ""
+    # 获取 values[0][0:2] 的优化
     if info:
-        match str(values[0])[0:2]:
-            case "§1":
-                _info = "\033[7;37;34m"
-            case "§2":
-                _info = "\033[7;37;32m"
-            case "§3":
-                _info = "\033[7;37;36m"
-            case "§4":
-                _info = "\033[7;37;31m"
-            case "§5":
-                _info = "\033[7;37;35m"
-            case "§6":
-                _info = "\033[7;37;33m"
-            case "§7":
-                _info = "\033[7;37;90m"
-            case "§8":
-                _info = "\033[7;37;2m"
-            case "§9":
-                _info = "\033[7;37;94m"
-            case "§a":
-                _info = "\033[7;37;92m"
-            case "§b":
-                _info = "\033[7;37;96m"
-            case "§c":
-                _info = "\033[7;37;91m"
-            case "§d":
-                _info = "\033[7;37;95m"
-            case "§e":
-                _info = "\033[7;37;93m"
-            case "§f":
-                _info = "\033[7;37;1m"
-            case "§r":
-                _info = "\033[0m"
-            case _:
-                _info = "\033[7;37;1m"
-        info = _info+info.replace("§1", "\033[7;37;34m").replace("§2", "\033[7;37;32m").replace("§3", "\033[7;37;36m").replace("§4", "\033[7;37;31m").replace("§5", "\033[7;37;35m").replace("§6", "\033[7;37;33m").replace("§7", "\033[7;37;90m").replace("§8", "\033[7;37;2m").replace(
-            "§9", "\033[7;37;94m").replace("§a", "\033[7;37;92m").replace("§b", "\033[7;37;96m").replace("§c", "\033[7;37;91m").replace("§d", "\033[7;37;95m").replace("§e", "\033[7;37;93m").replace("§f", "\033[7;37;1m").replace("§r", "\033[0m")+"\033[0m "
-        info +="\033[0m"
+        if no_color not in [1, 3]:
+            match str(values[0])[0:2]:
+                case "§1":
+                    _info = "\033[7;37;34m"
+                case "§2":
+                    _info = "\033[7;37;32m"
+                case "§3":
+                    _info = "\033[7;37;36m"
+                case "§4":
+                    _info = "\033[7;37;31m"
+                case "§5":
+                    _info = "\033[7;37;35m"
+                case "§6":
+                    _info = "\033[7;37;33m"
+                case "§7":
+                    _info = "\033[7;37;90m"
+                case "§8":
+                    _info = "\033[7;37;2m"
+                case "§9":
+                    _info = "\033[7;37;94m"
+                case "§a":
+                    _info = "\033[7;37;92m"
+                case "§b":
+                    _info = "\033[7;37;96m"
+                case "§c":
+                    _info = "\033[7;37;91m"
+                case "§d":
+                    _info = "\033[7;37;95m"
+                case "§e":
+                    _info = "\033[7;37;93m"
+                case "§f":
+                    _info = "\033[7;37;1m"
+                case "§r":
+                    _info = "\033[0m"
+                case _:
+                    _info = "\033[7;37;1m"
+            info = "".join([_info, info.replace("§1", "\033[7;37;34m").replace("§2", "\033[7;37;32m").replace("§3", "\033[7;37;36m").replace("§4", "\033[7;37;31m").replace("§5", "\033[7;37;35m").replace("§6", "\033[7;37;33m").replace("§7", "\033[7;37;90m").replace("§8", "\033[7;37;2m").replace(
+                "§9", "\033[7;37;94m").replace("§a", "\033[7;37;92m").replace("§b", "\033[7;37;96m").replace("§c", "\033[7;37;91m").replace("§d", "\033[7;37;95m").replace("§e", "\033[7;37;93m").replace("§f", "\033[7;37;1m").replace("§r", "\033[0m")+"\033[0m ", "\033[0m"])
+        else:
+            info = "[{}] ".format(removeColorInText(info).replace(" ", ""))
     else:
         info = ""
     next_print_first = ""
+
     for i in values:
         i = str(i)
         if word_wrapping:
@@ -112,48 +203,45 @@ def color(*values, output: bool = True, end: str = '\n', replace: bool = False, 
                 all = i.split("\n")
                 __values = []
                 for v, f in enumerate(all):
-                    f=str(f)
-                    ret = re.findall('§[a-fr0-9]',f)
-                    if len(ret)==0:
-                        pass
-                    else:
+                    all_1 = len(all)-1
+                    f = str(f)
+                    ret = re.findall('§[a-fr0-9]', f)
+                    if len(ret) != 0:
                         next_print_first = ret[-1]
-                    if v==0:
+                    f = replace_mc_color.replace_keywords(f)
+                    if v == 0:
                         __values.append((next_print_first+f+"\n").replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
-                        "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
-                    elif v == len(all)-1:
-                        __values.append((info+next_print_first+f).replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
-                        "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
-                    else:
-                        __values.append((info+next_print_first+f+"\n").replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
+                            "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
+                        continue
+                    if v == all_1:
+                        __values.append((datetime.datetime.now().strftime(title_time)+info+next_print_first+f).replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
+                            "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
+                        continue
+                    __values.append((datetime.datetime.now().strftime(title_time)+info+next_print_first+f+"\n").replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
                         "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
 
                 _values.append("".join(__values))
             else:
                 _values.append(i.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
-                "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
+                    "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
         else:
-            _values.append(i.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
-            "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
-    _values = tuple(_values)
-
-    # 这里是 print 的实现
-    if output:
-        if replace:
-            file.write("\r")
-            end = ""
-        file.write(info)
-        for i, v in enumerate(_values):
-            file.write(v)
-            if i != len(_values)-1:
-                file.write(sep)
+            if no_color not in [2, 3]:
+                _values.append(i.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
+                    "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
             else:
-                file.write("\033[0m")
-                file.write(end)
-        if flush:
-            file.flush()
+                _values.append(removeColorMC(i))
+    if end_not_replace:
+        _values[-1] = _values[-1].rstrip("\033[0m")
+    if output:
+        if is_time:
+            print(datetime.datetime.now().strftime(title_time),
+                  sep="", end="", file=file, flush=flush)
+        print(info, sep="", end="", file=file, flush=flush)
+        print(*_values, sep=sep, end=end, file=file, flush=flush)
     else:
         return_text = []
+        if is_time:
+            return_text.append(datetime.datetime.now().strftime(title_time))
         for i, v in enumerate(_values):
             return_text.append(v)
             if i != len(_values)-1:
@@ -162,14 +250,16 @@ def color(*values, output: bool = True, end: str = '\n', replace: bool = False, 
                 return_text.append("\033[0m")
         return "".join(return_text)
 
-def input_bool(text:str)-> bool:
-    "获取输入并自动判断,输入值为 Y 或 y 时 返回 True"
-    return color_input(text) in ["Y","y"]
 
-def input_parameter(text:str,selfs:list or None = None,error:str = "该数值不存在,请填写正确值!",help="")-> str:
-    while(1):
+def input_bool(text: str) -> bool:
+    "获取输入并自动判断,输入值为 Y 或 y 时 返回 True"
+    return color_input(text) in ["Y", "y"]
+
+
+def input_parameter(text: str, selfs: list or None = None, error: str = "该数值不存在,请填写正确值!", help="") -> str:
+    while (1):
         code = color_input(text)
-        if selfs!=None:
+        if selfs != None:
             if code != "help":
                 if code in selfs:
                     return code

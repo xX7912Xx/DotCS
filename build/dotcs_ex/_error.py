@@ -1,0 +1,2 @@
+class PluginSkip(Exception):
+    pass

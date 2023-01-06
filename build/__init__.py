@@ -138,10 +138,20 @@ def _color(*values, output: bool = True, end: str = '\n', replace: bool = False,
             else:
                 return_text.append("\033[0m")
         return "".join(return_text)
-
+def debug_tip(_function,config):
+    if __name__ == "__main__":
+        if config["debug"]:
+            if type(_function).__name__=="function":
+                color("§a加载函数 §e{}§a".format(_function.__name__),info="§4 测试 ")
+            else:
+                color("§a加载{} §e{}§a".format(type(_function).__name__,_function.__name__),info="§4 测试 ")
+    return _function
 
 try:# 初始化变量
-    from . import dotcs_ex
+    try:
+        from . import dotcs_ex
+    except Exception as err:
+        import dotcs_ex
     lastOutputLen = 0
     lastReplace = False
     lastReplaceByNext = False
@@ -178,7 +188,6 @@ try:# 初始化变量
         返回: 无返回值
         """
         raise SystemExit(0)
-    del _color
 except Exception as err:
     _color("§4DotCS 初始化启动错误!本次启动缺少依赖库 dotcs_ex。如果您是编译安装,则需要前往 bbs.mcppl.art 下载依赖文件 dotcs_ex。", info="§4 错误 ")
     _color("§4按下回车退出程序", info="§4 输入 ", end="")
@@ -270,13 +279,32 @@ try:# 第2次的初始化变量 + 欢迎语句
             color("§4本提示会在有config.json文件时不再提示.您可以通过使用 §adotcs_community§r.§adotcs_ex§r.§aconfig§r.§ainit§r.§aconfig§6(§e\"config.json\"§6)§r §4来配置文件",info="§e 提示 ")
     if __name__ =="__main__":
         _config = dotcs_ex.config.init.config("config.json")
+        _config.append_function(dotcs_ex.config.fb_set.update_fb_set)
         _config.append_function(dotcs_ex.config.update_server.update_server)
+        _config.append_function(dotcs_ex.config.debug.update_debug)
+
         _config.init()
         config = _config.get_return()
+
+    
+    is_port_used    = debug_tip(dotcs_ex.tool.is_port_used,config)
+    strInList       = debug_tip(dotcs_ex.tool.strInList,config)
+    isfloat         = debug_tip(dotcs_ex.tool.isfloat,config)
+    getType         = debug_tip(dotcs_ex.tool.getType,config)
+    float2int       = debug_tip(dotcs_ex.tool.float2int,config)
+    floatPos2intPos = debug_tip(dotcs_ex.tool.floatPos2intPos,config)
+    second2minsec   = debug_tip(dotcs_ex.tool.second2minsec,config)
+    QRcode          = debug_tip(dotcs_ex.tool.QRcode,config)
+    PluginSkip      = debug_tip(dotcs_ex._error.PluginSkip,config)
+    setStatus       = debug_tip(dotcs_ex.tool.path.setStatus,config)
+    getStatus       = debug_tip(dotcs_ex.tool.path.getStatus,config)
+    removeColorMC   = debug_tip(dotcs_ex.color.removeColorMC,config)
+    
+    # 更新旧版用户的 date 数据的位置
 
     # color(title4)
        
 except Exception as err:
-    color("§c导入Python 本地库失败, 信息:\n"+str(err), info="§c 错误 ")
+    color("§c2次初始化失败, 信息:\n"+str(err), info="§c 错误 ")
     color("§c"+traceback.format_exc(), info="§c 错误 ")
     exitChatbarMenu(False, 5)
