@@ -1,0 +1,16 @@
+{
+    "server": "96611728",
+    "password": "123456",
+    "debug": true,
+    "fb_config": {
+        "fb_update_url": "https://api.github.com/repos/LNSSPsd/PhoenixBuilder/releases/latest",
+        "fb_update_mode_old": false,
+        "fb_ws_connect": "wss://api.fastbuilder.pro:2053/",
+        "fb_token_mode": true,
+        "fb_token_path": "fbtoken",
+        "fb_token": "",
+        "fb_path": "phoenixBuilder.exe",
+        "dotcs_connect_mode": true,
+        "fb_connect_url": "127.0.0.1:8000"
+    }
+}
