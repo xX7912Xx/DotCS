@@ -21,7 +21,7 @@ def color(text: str, output: bool = True, end: str = "\n", replace: bool = False
     """
 
 # 此版本更新后的 color 函数定义
-def color(*values, output: bool = True, end: str = '\n', replace: bool = False, replaceByNext: bool = False, info: str | bool = " 信息 ", sep=' ', file: TextIO = sys.stdout, flush=False, word_wrapping: bool = True, text: str = None, is_time: bool = True, end_not_replace: bool = False, no_color: int = 0, title_time: str = "[%H:%M:%S] ", **date) -> None | str:
+def color(*values, output: bool = True, end: str = '\n', replace: bool = False, replaceByNext: bool = False, info: str | bool = " 信息 ", sep=' ', file: TextIO = sys.stdout, flush=False, word_wrapping: bool = True, text: str = None, is_time: bool = True, end_not_replace: bool = False, no_color: int = 0, title_time: str = "[%H:%M:%S] ", color_mode: int = 0, **date) -> None | str:
     """
     在命令系统控制台输出信息
     默认情况下，将值打印到流或 sys.stdout。可选关键字参数：
@@ -50,8 +50,17 @@ def color(*values, output: bool = True, end: str = '\n', replace: bool = False, 
             1 : 只移除 info 
             2 : 只移除 values
             3 : 都移除
+            4 : info 的彩色字符号不做处理
+            5 : values 的彩色字符号不做处理
+            6 : info 、values 的彩色字符号均不做处理 
         title_time: 格式化时间 ,默认值 "[%H:%M:%S] "
+        color_mode : 彩色字的渲染模式(默认值为0)(级别低于 no_color)
+            0 : 标准渲染,自动替换彩色字符合为对应内容
+            1 : info 在进行替换时,显示其彩色字符号
+            2 : values 在进行替换时,显示其彩色字符号
+            3 : info 以及 values 在进行替换时,显示器彩色字符合
     返回: None | str
+    """
 ```
 2. 修改了 countdown 函数,现在 countdown 函数 增加了 countdown 以及 delay_color参数,countdown 参数增加了指定是倒计时的数字的颜色,默认黄色.并且增加了倒计时完成后的提示语.delay_color 则是指定了 倒计时的秒表的颜色
 3. 重构了 DotCS 导入库的步骤,现在可以更加清晰的看到导入的是什么类型的库导致的导入失败
