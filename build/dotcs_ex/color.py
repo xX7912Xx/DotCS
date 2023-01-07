@@ -8,7 +8,6 @@ from . import warning
 from . import error
 from . import color_input
 import sys
-
 import numpy as np
 lastOutputLen = 0
 replace_mc_color = flashtext.KeywordProcessor()
@@ -95,21 +94,44 @@ def _color(text: str, output: bool = True, end: str = "\n", replace: bool = Fals
 
 
 def removeColorInText(text):
+    """
+    过滤 color 函数中 info 的彩色字
+    ---
+    参数:
+        text:str 文本
+    返回:
+        str"""
     return text.replace("\033[0;37;34m", "").replace("\033[0;37;32m", "").replace("\033[0;37;36m", "").replace("\033[0;37;31m", "").replace("\033[0;37;35m", "").replace("\033[0;37;33m", "").replace("\033[0;37;90m", "").replace("\033[0;37;2m", "").replace("\033[0;37;94m", "").replace("\033[0;37;92m", "").replace("\033[0;37;96m", "").replace("\033[0;37;91m", "").replace("\033[0;37;95m", "").replace("\033[0;37;93m", "").replace("\033[0;37;1m", "").replace("\033[0m", "").replace("\033[7;37;34m", "").replace("\033[7;37;32m", "").replace("\033[7;37;36m", "").replace("\033[7;37;31m", "").replace("\033[7;37;35m", "").replace("\033[7;37;33m", "").replace("\033[7;37;90m", "").replace("\033[7;37;2m", "").replace("\033[7;37;94m", "").replace("\033[7;37;92m", "").replace("\033[7;37;96m", "").replace("\033[7;37;91m", "").replace("\033[7;37;95m", "").replace("\033[7;37;93m", "").replace("\033[7;37;1m", "")
 
 
-def removeColorMC(text):
+def removeColorMC(text: str) -> str:
+    """
+    过滤mc的彩色字
+    ---
+    参数:
+        text:文本
+    返回:
+        str
+    """
     return text.replace("§0", "\033[0;37;30m").replace("§1", "").replace("§2", "").replace("§3", "").replace("§4", "").replace("§5", "").replace("§6", "").replace("§7", "").replace("§8", "").replace("§9", "").replace("§a", "").replace("§b", "").replace("§c", "").replace("§d", "").replace("§e", "").replace("§f", "m").replace("§r", "")
 
 
-def getTextColorInTheEnd(text):
+def getTextColorInTheEnd(text: str) -> str:
+    """
+    获取 Text 的结尾内容并返回对应代码
+    ---
+    参数:
+        text:文本
+    返回:
+        str
+    """
     if "\033[" in text and "m" in text:
         return "\033[" + text.split("\033[")[-1].split("m")[0] + "m"
     else:
         return "\033[0m"
 
 
-def color(*values, output: bool = True, end: str = '\n', replace: bool = False, replaceByNext: bool = False, info: str | bool = " 信息 ", sep=' ', file: TextIO = sys.stdout, flush=False, word_wrapping: bool = True, text: str = None, is_time: bool = True, end_not_replace: bool = False, no_color: int = 0, title_time: str = "[%H:%M:%S] ", **date) -> None | str:
+def color(*values, output: bool = True, end: str = '\n', replace: bool = False, replaceByNext: bool = False, info: str | bool = " 信息 ", sep=' ', file: TextIO = sys.stdout, flush=False, word_wrapping: bool = True, text: str = None, is_time: bool = True, end_not_replace: bool = False, no_color: int = 0, title_time: str = "[%H:%M:%S] ", color_mode: int = 0, **date) -> None | str:
     """
     在命令系统控制台输出信息
     默认情况下，将值打印到流或 sys.stdout。可选关键字参数：
@@ -138,7 +160,15 @@ def color(*values, output: bool = True, end: str = '\n', replace: bool = False, 
             1 : 只移除 info 
             2 : 只移除 values
             3 : 都移除
+            4 : info 的彩色字符号不做处理
+            5 : values 的彩色字符号不做处理
+            6 : info 、values 的彩色字符号均不做处理 
         title_time: 格式化时间 ,默认值 "[%H:%M:%S] "
+        color_mode : 彩色字的渲染模式(默认值为0)(级别低于 no_color)
+            0 : 标准渲染,自动替换彩色字符合为对应内容
+            1 : info 在进行替换时,显示其彩色字符号
+            2 : values 在进行替换时,显示其彩色字符号
+            3 : info 以及 values 在进行替换时,显示器彩色字符合
     返回: None | str
     """
     if text:
@@ -152,43 +182,85 @@ def color(*values, output: bool = True, end: str = '\n', replace: bool = False, 
     # 获取 values[0][0:2] 的优化
     if info:
         if no_color not in [1, 3]:
-            match str(values[0])[0:2]:
-                case "§1":
-                    _info = "\033[7;37;34m"
-                case "§2":
-                    _info = "\033[7;37;32m"
-                case "§3":
-                    _info = "\033[7;37;36m"
-                case "§4":
-                    _info = "\033[7;37;31m"
-                case "§5":
-                    _info = "\033[7;37;35m"
-                case "§6":
-                    _info = "\033[7;37;33m"
-                case "§7":
-                    _info = "\033[7;37;90m"
-                case "§8":
-                    _info = "\033[7;37;2m"
-                case "§9":
-                    _info = "\033[7;37;94m"
-                case "§a":
-                    _info = "\033[7;37;92m"
-                case "§b":
-                    _info = "\033[7;37;96m"
-                case "§c":
-                    _info = "\033[7;37;91m"
-                case "§d":
-                    _info = "\033[7;37;95m"
-                case "§e":
-                    _info = "\033[7;37;93m"
-                case "§f":
-                    _info = "\033[7;37;1m"
-                case "§r":
-                    _info = "\033[0m"
-                case _:
-                    _info = "\033[7;37;1m"
-            info = "".join([_info, info.replace("§1", "\033[7;37;34m").replace("§2", "\033[7;37;32m").replace("§3", "\033[7;37;36m").replace("§4", "\033[7;37;31m").replace("§5", "\033[7;37;35m").replace("§6", "\033[7;37;33m").replace("§7", "\033[7;37;90m").replace("§8", "\033[7;37;2m").replace(
-                "§9", "\033[7;37;94m").replace("§a", "\033[7;37;92m").replace("§b", "\033[7;37;96m").replace("§c", "\033[7;37;91m").replace("§d", "\033[7;37;95m").replace("§e", "\033[7;37;93m").replace("§f", "\033[7;37;1m").replace("§r", "\033[0m")+"\033[0m ", "\033[0m"])
+            if no_color not in [4, 6]:
+                if color_mode not in [1, 3]:
+                    match str(values[0])[0:2]:
+                        case "§1":
+                            _info = "\033[7;37;34m"
+                        case "§2":
+                            _info = "\033[7;37;32m"
+                        case "§3":
+                            _info = "\033[7;37;36m"
+                        case "§4":
+                            _info = "\033[7;37;31m"
+                        case "§5":
+                            _info = "\033[7;37;35m"
+                        case "§6":
+                            _info = "\033[7;37;33m"
+                        case "§7":
+                            _info = "\033[7;37;90m"
+                        case "§8":
+                            _info = "\033[7;37;2m"
+                        case "§9":
+                            _info = "\033[7;37;94m"
+                        case "§a":
+                            _info = "\033[7;37;92m"
+                        case "§b":
+                            _info = "\033[7;37;96m"
+                        case "§c":
+                            _info = "\033[7;37;91m"
+                        case "§d":
+                            _info = "\033[7;37;95m"
+                        case "§e":
+                            _info = "\033[7;37;93m"
+                        case "§f":
+                            _info = "\033[7;37;1m"
+                        case "§r":
+                            _info = "\033[0m"
+                        case _:
+                            _info = "\033[7;37;1m"
+                else:
+                    match str(values[0])[0:2]:
+                        case "§1":
+                            _info = "\033[7;37;34m§1"
+                        case "§2":
+                            _info = "\033[7;37;32m§2"
+                        case "§3":
+                            _info = "\033[7;37;36m§3"
+                        case "§4":
+                            _info = "\033[7;37;31m§4"
+                        case "§5":
+                            _info = "\033[7;37;35m§5"
+                        case "§6":
+                            _info = "\033[7;37;33m§6"
+                        case "§7":
+                            _info = "\033[7;37;90m§7"
+                        case "§8":
+                            _info = "\033[7;37;2m§8"
+                        case "§9":
+                            _info = "\033[7;37;94m§9"
+                        case "§a":
+                            _info = "\033[7;37;92m§a"
+                        case "§b":
+                            _info = "\033[7;37;96m§b"
+                        case "§c":
+                            _info = "\033[7;37;91m§c"
+                        case "§d":
+                            _info = "\033[7;37;95m§d"
+                        case "§e":
+                            _info = "\033[7;37;93m§e"
+                        case "§f":
+                            _info = "\033[7;37;1m§f"
+                        case "§r":
+                            _info = "\033[0m§r"
+                        case _:
+                            _info = "\033[7;37;1m"
+                if color_mode  in [1, 3]:
+                    info = "".join([_info, info.replace("§1", "\033[7;37;34m§1").replace("§2", "\033[7;37;32m§2").replace("§3", "\033[7;37;36m§3").replace("§4", "\033[7;37;31m§4").replace("§5", "\033[7;37;35m§5").replace("§6", "\033[7;37;33m§6").replace("§7", "\033[7;37;90m§7").replace("§8", "\033[7;37;2m§8").replace(
+                        "§9", "\033[7;37;94m§9").replace("§a", "\033[7;37;92m§a").replace("§b", "\033[7;37;96m§b").replace("§c", "\033[7;37;91m§c").replace("§d", "\033[7;37;95m§d").replace("§e", "\033[7;37;93m§e").replace("§f", "\033[7;37;1m§f").replace("§r", "\033[0m§r")+"\033[0m ", "\033[0m"])
+                else:
+                    info = "".join([_info, info.replace("§1", "\033[7;37;34m").replace("§2", "\033[7;37;32m").replace("§3", "\033[7;37;36m").replace("§4", "\033[7;37;31m").replace("§5", "\033[7;37;35m").replace("§6", "\033[7;37;33m").replace("§7", "\033[7;37;90m").replace("§8", "\033[7;37;2m").replace(
+                        "§9", "\033[7;37;94m").replace("§a", "\033[7;37;92m").replace("§b", "\033[7;37;96m").replace("§c", "\033[7;37;91m").replace("§d", "\033[7;37;95m").replace("§e", "\033[7;37;93m").replace("§f", "\033[7;37;1m").replace("§r", "\033[0m")+"\033[0m ", "\033[0m"])
         else:
             info = "[{}] ".format(removeColorInText(info).replace(" ", ""))
     else:
@@ -210,24 +282,65 @@ def color(*values, output: bool = True, end: str = '\n', replace: bool = False, 
                         next_print_first = ret[-1]
                     f = replace_mc_color.replace_keywords(f)
                     if v == 0:
-                        __values.append((next_print_first+f+"\n").replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
-                            "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
+                        if no_color not in [5, 6]:
+                            if color_mode not in [2, 3]:
+                                __values.append((next_print_first+f+"\n").replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
+                                    "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
+                            else:
+                                __values.append(next_print_first.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
+                                    "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+(f+"\n").replace("§1", "\033[0;37;34m§1").replace("§2", "\033[0;37;32m§2").replace("§3", "\033[0;37;36m§3").replace("§4", "\033[0;37;31m§4").replace("§5", "\033[0;37;35m§5").replace("§6", "\033[0;37;33m§6").replace("§7", "\033[0;37;90m§7").replace("§8", "\033[0;37;2m").replace(
+                                    "§9", "\033[0;37;94m§9").replace("§a", "\033[0;37;92m§a").replace("§b", "\033[0;37;96m§b").replace("§c", "\033[0;37;91m§c").replace("§d", "\033[0;37;95m§d").replace("§e", "\033[0;37;93m§e").replace("§f", "\033[0;37;1m§f").replace("§r", "\033[0m§r")+"\033[0m")
+                        else:
+                            __values.append(
+                                (next_print_first+f+"\n")+"\033[0m")
                         continue
                     if v == all_1:
-                        __values.append((datetime.datetime.now().strftime(title_time)+info+next_print_first+f).replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
-                            "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
+                        if no_color not in [5, 6]:
+                            if color_mode not in [2, 3]:
+                                __values.append((datetime.datetime.now().strftime(title_time)+info+next_print_first+f).replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
+                                    "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
+                            else:
+                                __values.append((datetime.datetime.now().strftime(title_time).replace("§1", "\033[0;37;34m§1").replace("§2", "\033[0;37;32m§2").replace("§3", "\033[0;37;36m§3").replace("§4", "\033[0;37;31m§4").replace("§5", "\033[0;37;35m§5").replace("§6", "\033[0;37;33m§6").replace("§7", "\033[0;37;90m§7").replace("§8", "\033[0;37;2m").replace(
+                                    "§9", "\033[0;37;94m§9").replace("§a", "\033[0;37;92m§a").replace("§b", "\033[0;37;96m§b").replace("§c", "\033[0;37;91m§c").replace("§d", "\033[0;37;95m§d").replace("§e", "\033[0;37;93m§e").replace("§f", "\033[0;37;1m§f").replace("§r", "\033[0m§r")+"\033[0m"+info+"\033[0m"+next_print_first.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
+                                    "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+f)+"\033[0m")
+                        else:
+                            __values.append((datetime.datetime.now().strftime(
+                                title_time)+info+next_print_first+f)+"\033[0m")
                         continue
-                    __values.append((datetime.datetime.now().strftime(title_time)+info+next_print_first+f+"\n").replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
-                        "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
-
+                    if no_color not in [5, 6]:
+                        if color_mode not in [2, 3]:
+                            __values.append((datetime.datetime.now().strftime(title_time)+info+next_print_first.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
+                                "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+f.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
+                                "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m"+"\n")+"\033[0m")
+                        else:
+                            __values.append((datetime.datetime.now().strftime(title_time)+info+next_print_first.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
+                                    "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+f.replace("§1", "\033[0;37;34m§1").replace("§2", "\033[0;37;32m§2").replace("§3", "\033[0;37;36m§3").replace("§4", "\033[0;37;31m§4").replace("§5", "\033[0;37;35m§5").replace("§6", "\033[0;37;33m§6").replace("§7", "\033[0;37;90m§7").replace("§8", "\033[0;37;2m").replace(
+                                    "§9", "\033[0;37;94m§9").replace("§a", "\033[0;37;92m§a").replace("§b", "\033[0;37;96m§b").replace("§c", "\033[0;37;91m§c").replace("§d", "\033[0;37;95m§d").replace("§e", "\033[0;37;93m§e").replace("§f", "\033[0;37;1m§f").replace("§r", "\033[0m§r")+"\033[0m"+"\n")+"\033[0m")
+                    else:
+                        __values.append((datetime.datetime.now().strftime(
+                            title_time)+info+next_print_first+f+"\n")+"\033[0m")
                 _values.append("".join(__values))
             else:
-                _values.append(i.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
-                    "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
+                if no_color not in [5, 6]:
+                    if color_mode not in [2, 3]:
+                        _values.append(i.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
+                            "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
+                    else:
+                        _values.append(i.replace("§1", "\033[0;37;34m§1").replace("§2", "\033[0;37;32m§2").replace("§3", "\033[0;37;36m§3").replace("§4", "\033[0;37;31m§4").replace("§5", "\033[0;37;35m§5").replace("§6", "\033[0;37;33m§6").replace("§7", "\033[0;37;90m§7").replace("§8", "\033[0;37;2m").replace(
+                                    "§9", "\033[0;37;94m§9").replace("§a", "\033[0;37;92m§a").replace("§b", "\033[0;37;96m§b").replace("§c", "\033[0;37;91m§c").replace("§d", "\033[0;37;95m§d").replace("§e", "\033[0;37;93m§e").replace("§f", "\033[0;37;1m§f").replace("§r", "\033[0m§r")+"\033[0m")
+                else:
+                    _values.append(i+"\033[0m")
         else:
             if no_color not in [2, 3]:
-                _values.append(i.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
-                    "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
+                if no_color not in [5, 6]:
+                    if color_mode not in [2, 3]:
+                        _values.append(i.replace("§1", "\033[0;37;34m").replace("§2", "\033[0;37;32m").replace("§3", "\033[0;37;36m").replace("§4", "\033[0;37;31m").replace("§5", "\033[0;37;35m").replace("§6", "\033[0;37;33m").replace("§7", "\033[0;37;90m").replace("§8", "\033[0;37;2m").replace(
+                            "§9", "\033[0;37;94m").replace("§a", "\033[0;37;92m").replace("§b", "\033[0;37;96m").replace("§c", "\033[0;37;91m").replace("§d", "\033[0;37;95m").replace("§e", "\033[0;37;93m").replace("§f", "\033[0;37;1m").replace("§r", "\033[0m")+"\033[0m")
+                    else:
+                        _values.append(i.replace("§1", "\033[0;37;34m§1").replace("§2", "\033[0;37;32m§2").replace("§3", "\033[0;37;36m§3").replace("§4", "\033[0;37;31m§4").replace("§5", "\033[0;37;35m§5").replace("§6", "\033[0;37;33m§6").replace("§7", "\033[0;37;90m§7").replace("§8", "\033[0;37;2m").replace(
+                                    "§9", "\033[0;37;94m§9").replace("§a", "\033[0;37;92m§a").replace("§b", "\033[0;37;96m§b").replace("§c", "\033[0;37;91m§c").replace("§d", "\033[0;37;95m§d").replace("§e", "\033[0;37;93m§e").replace("§f", "\033[0;37;1m§f").replace("§r", "\033[0m§r")+"\033[0m")
+                else:
+                    _values.append(i+"\033[0m")
             else:
                 _values.append(removeColorMC(i))
     if end_not_replace:

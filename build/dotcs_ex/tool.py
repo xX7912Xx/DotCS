@@ -177,14 +177,29 @@ class input_output:
 
 
 
-def isfloat(str):
+def isfloat(str:str)->bool:
+    """
+    判定 str 是否是 float 类型数值
+    ---
+    参数:
+        str:str -> 变量
+    返回:
+        bool -> 判定结果
+    """
     try:
         float(str)
         return True
     except ValueError:
         return False
 
-def getType(sth):
+def getType(sth:Any)->str:
+    """
+    获取变量类型,是基础类型的 objects.__class__.__name__ 的封装
+    ---
+    参数:
+        sth : Any -> 任意类型
+    返回:
+        str -> 类的名字"""
     return sth.__class__.__name__
     
 def float2int(number: float, way: int = 1) -> int:
@@ -207,9 +222,21 @@ def float2int(number: float, way: int = 1) -> int:
             return int(number)
         else:
             return int(number)+1
-def floatPos2intPos(number: float | str) -> int:
+def floatPos2intPos(number: float | str) -> int | float:
+    """
+    将 float / str 转换成 int / float 类型
+    ---
+    参数:
+        number: float | str 
+    返回:
+        int | float
+        (
+            当 number 是 float类型时,返回 int 类型变量
+            当 number 是 str 类型是,返回 float 类型变量
+        )"""
     if type(number) == str:
         number = float(number)
+        return number
     if type(number) == int:
         return number
     if int(number) == number:
