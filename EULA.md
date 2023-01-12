@@ -17,7 +17,9 @@ DotCS Dev要求您年满14岁, 并且拥有电脑或手机的基本操作能力.
 **如您自主选择同意协议或开始使用DotCS, 则视为您已充分理解协议, 并同意作为协议的一方当事人接受本协议以及其他使用DotCS相关的协议的约束.**
 
 [QQ群: 467443403](https://qm.qq.com/cgi-bin/qm/qr?k=V3SWbmmVALVJGX3WFCMzu8aw_QnR64M3&jump_from=webapi&authKey=plJ2QN3Bj/fpwUmMJs4VBcjmZeM499/wqQHfK6PjjgrKcZt0qNjrQsyVQZi9ztNm)
+
 [QQ社区版专群: 833303126](https://jq.qq.com/?_wv=1027&k=fHr6wRbi)
+
 [CberGit 论坛专区](https://cbergit.com/categories/dotcs.17/)
 
 ---
