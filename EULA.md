@@ -16,8 +16,8 @@ DotCS Dev要求您年满14岁, 并且拥有电脑或手机的基本操作能力.
 
 **如您自主选择同意协议或开始使用DotCS, 则视为您已充分理解协议, 并同意作为协议的一方当事人接受本协议以及其他使用DotCS相关的协议的约束.**
 
-[QQ群: 833303126](https://jq.qq.com/?_wv=1027&k=fHr6wRbi)
-
+[QQ群: 467443403](https://qm.qq.com/cgi-bin/qm/qr?k=V3SWbmmVALVJGX3WFCMzu8aw_QnR64M3&jump_from=webapi&authKey=plJ2QN3Bj/fpwUmMJs4VBcjmZeM499/wqQHfK6PjjgrKcZt0qNjrQsyVQZi9ztNm)
+[QQ社区版专群: 833303126](https://jq.qq.com/?_wv=1027&k=fHr6wRbi)
 [CberGit 论坛专区](https://cbergit.com/categories/dotcs.17/)
 
 ---
@@ -30,8 +30,6 @@ DotCS Dev要求您年满14岁, 并且拥有电脑或手机的基本操作能力.
 
      > 以下为社区版使用的 **[非 (Python自带或pip下载) 的库] 和 第三方代码**, 均获得其作者许可.
      >
-     > * bdx_work_shop, 作者: 2401, [开源地址](https://github.com/CMA2401PT/BDXWorkShop)
-     >
      > * FastBuilder connector (./proxy 目录下的全部文件), 作者: 2401, [开源地址](https://github.com/LNSSPsd/PhoenixBuilder/tree/main/fastbuilder/external)
      >
      > * TDES encrypt, 作者: 7912
@@ -39,11 +37,10 @@ DotCS Dev要求您年满14岁, 并且拥有电脑或手机的基本操作能力.
      > * Space Rectangular Coordinate System, 作者: 7912
      >
 
-
-   * DotCS Professional (下文简称Pro版), **价格: 50CNY**.
-
-   > 其中, 社区版由 **7912** 开发, Pro版由 **art** 开发, 两版之代码形式及架构等有很大不同, 两版之营利无关联, **您可视社区版和Pro版为两款功能类似的不同软件.**
-   >
+   * DotCS Discovery Edition X (下文简称exp版)(原名pro版)
+   * DotCS Web version (下文简称wv版)
+   * DotCS spigot (下文简称sp版)
+   * DotCS go (下文简称go版)
 
 2. DotCS Dev所提供的服务, 均限于在DotCS提供的平台内使用. 任何以恶意破解、恶意修改等非法手段将DotCS所提供的服务与其平台分离的行为, 皆不属于本协议约定的由DotCS Dev提供的服务. 由此引起的一切后果由行为人负责, 软件将保留依法追究行为人法律责任的权利.
 3. 软件官方所公布的方式为下载客户端(Windows平台)、注册、登录, 这是使用软件服务的唯一合法方式, 用户通过其他任何途径、任何渠道、任何方式获取的软件服务均为非法所得,  DotCS Dev概不承认其效力, 且一经发现, DotCS Dev有权立即作出删除、清零、封号等处理, 任何因此导致的一切不利后果均由用户自行承担. 请用户妥善保管自己的账号和密码, 加强密码安全性, 谨防账号泄露或被盗. **因用户账号被泄露或被盗而造成的任何损失, DotCS Dev不承担补偿责任**
