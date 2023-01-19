@@ -7,9 +7,8 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - "build/robot.py"
+      - "__init__.py"
   workflow_dispatch: {}
-
 
 jobs:
   build_Linux:
@@ -21,71 +20,31 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"
+
     - name: Installing dependencies.
       run: |
         python -m pip install --upgrade pip
-        pip install "bdx_work_shop" "psutil" "requests" "pymysql" "qrcode" "websocket-client" "brotli" "pillow" "rich" "numpy" "pyinstaller" "mido" "pycryptodome" "wget" "flashtext"
+        pip install -r ./requirements.txt
     - name: Building exe.
       run: |
-        cd ./build/
-        pyinstaller --upx-dir ./upx/Linux_amd64/ -F ./robot.py
-        mv ./dist/robot .
-        ./upx/Linux_amd64/upx --ultra-brute ./robot
+        pyinstaller -F ./__init__.py
+        cp ./dist/__init__ DotCS_community
+
     - name: Uploading to Github.
       run: |
-        cd ./build/
         echo Setting config.
-        git config --global user.email "wzm0529@163.com"
-        git config --global user.name "xX7912Xx"
+        git config --global user.email "121980156@qq.com"
+        git config --global user.name "inotart"
         echo Initing git.
         git init
         git remote add origin https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/xX7912Xx/DotCS.git
         git config --global core.autocrlf false
         echo Loading files.
-        git add ./robot
+        git add ./DotCS_community
         echo Setting commit.
         git commit -m "Github Action"
         echo Setting branch.
         git branch -M "GithubActionLinux"
         echo Pushing.
         git push -f -u origin "GithubActionLinux"
-        echo Finished.
-
-
-
-  build_Windows:
-    runs-on: windows-latest
-    steps:
-    - name: Loading job.
-      uses: actions/checkout@v3
-    - name: Setting up Python 3.10.
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Installing dependencies.
-      run: |
-        python -m pip install --upgrade pip
-        pip install "bdx_work_shop" "psutil" "requests" "pymysql" "qrcode" "websocket-client" "brotli" "pillow" "rich" "numpy" "pyinstaller" "mido" "pycryptodome" "wget" "flashtext"
-    - name: Building exe.
-      run: |
-        cd build
-        cmd.exe /c build.cmd
-    - name: Uploading to Github.
-      run: |
-        cd build
-        echo Setting config.
-        git config --global user.email "wzm0529@163.com"
-        git config --global user.name "xX7912Xx"
-        echo Initing git.
-        git init
-        git remote add origin https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/xX7912Xx/DotCS.git
-        git config --global core.autocrlf false
-        echo Loading files.
-        git add robot.exe
-        echo Setting commit.
-        git commit -m "Github Action"
-        echo Setting branch.
-        git branch -M "GithubActionWindows"
-        echo Pushing.
-        git push -f -u origin "GithubActionWindows"
         echo Finished.
