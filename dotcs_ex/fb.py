@@ -51,6 +51,14 @@ def listen(p:subprocess.Popen[bytes]):
             color.color("§4FB已退出,正在重启",end="",info="§b  FB  §r",word_wrapping=False)
             p.kill()
             break
+        elif "\x1b[40;31m\x1b[40;31m ERROR \x1b[0m\x1b[0m \x1b[91m\x1b[91m"in line:
+            color.color(line,end="",info="§4  FB  §r",word_wrapping=False)
+            try:
+                p.stdin.write(b"\n")
+            except:pass
+            try:
+                p.stdin.flush()
+            except:pass
         else:
             color.color(line,end="",info="§b  FB  §r",word_wrapping=False)
 
@@ -60,6 +68,10 @@ def error_listen(p:subprocess.Popen[bytes]):
     while p.poll() is None:
         line=p.stderr.readline().decode("utf8")
         color.color(line,end="",info="§4  FB  §r",word_wrapping=False)
-        p.stdin.write(b"\n")
-        p.stdin.flush()
+        try:
+            p.stdin.write(b"\n")
+        except:pass
+        try:
+            p.stdin.flush()
+        except:pass
         break

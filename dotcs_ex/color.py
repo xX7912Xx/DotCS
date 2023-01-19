@@ -405,7 +405,7 @@ def color(*values, output: bool = True, end: str = '\n', replace: bool = False, 
                 
                 _values.append("".join(__values))
             else:
-                _values.append("".join([color_replace(next_print_first),"\033[0m"]))
+                _values.append(color_replace(i)+"\033[0m")
         else:
             _values.append(color_replace(i)+"\033[0m")
     if end_not_replace:
