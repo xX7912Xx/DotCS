@@ -33,8 +33,8 @@ jobs:
     - name: Uploading to Github.
       run: |
         echo Setting config.
-        git config --global user.email "121980156@qq.com"
-        git config --global user.name "inotart"
+        git config --global user.email "wzm0529@163.com"
+        git config --global user.name "xX7912Xx"
         echo Initing git.
         git init
         git remote add origin https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/xX7912Xx/DotCS.git
