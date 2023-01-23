@@ -9,12 +9,13 @@ import rich
 import sys
 import dynaconf
 import psutil
+import dotcsex
+import traceback, socket, datetime, time, json, random, sys, urllib, urllib.parse, platform, sqlite3, threading, struct, hashlib, shutil, base64, ctypes, collections, types, itertools, inspect, _thread as thread
 sys.path.append(os.getcwd())
+if os.path.join(os.getcwd(),"site-packages")==False:
+    os.makedirs(os.path.join(os.getcwd(),"site-packages"))
+sys.path.append(os.path.join(os.getcwd(),"site-packages"))
 from config import settings
-try:
-    import dotcs_ex
-except:
-    from . import dotcs_ex
 
 
 
@@ -22,34 +23,25 @@ except:
 if __name__ =="__main__":
     multiprocessing.freeze_support()
     rich.print("[green]DotCS 社区版[/]")
-    rich.print("[green]作者:万载县互联网服务工作室[/]")
-    rich.print(f"[yellow]版本:{dotcs_ex.date.version}[/]")
+    rich.print("[green]作者:万载县幻梦互联网服务工作室[/]")
+    rich.print(f"[yellow]版本:{dotcsex.date.version}[/]")
 
     # 登录 DotCS 用户中心
     pass
 
-    # 初始化配置文件
-    rich.print("[yellow]租赁服号:[/]",settings.server,sep="")
-    rich.print("[yellow]租赁服密码:[/]",settings.password,sep="")
-
     # 获取启动
-    dotcs_ex.color.color("§e正在启动FB中",info="§b  FB  §r",word_wrapping=False)
-    fb_= multiprocessing.Process(target=dotcs_ex.fb.running, args=(settings.server,settings.password,settings.port))
+    dotcsex.color.color("§e正在启动FB中",info="§b   FB   §r",word_wrapping=False)
+    fb_out_pipe, fb_in_pipe = multiprocessing.Pipe(True)
+    fb_= multiprocessing.Process(target=dotcsex.fb.running, args=(settings.server,settings.password,settings.port,(fb_out_pipe, fb_in_pipe),settings.color),daemon = True)
     fb_.start()
-
     # 开始管理插件文件夹
     os.makedirs("plugin") if os.path.isdir("plugin")==False else ""
 
-    # 开始启动插件
-    while(1):
-        try:
-            connect = dotcs_ex.conn.ConnectFB(f"127.0.0.1:{settings.port}")
-            dotcs_ex.conn.ReleaseConnByID(connect)
-            time.sleep(1)
-            break
-        except Exception as err:
-            dotcs_ex.color.color("§e等待连接FB中",info="§b  FB  §r",word_wrapping=False)
-    dotcs_ex.color.color("§aFB启动完成",info="§b  FB  §r",word_wrapping=False)
+    # 开始运行插件
+    run = multiprocessing.Process(target = dotcsex._old_plugin.plugin,args=(settings.server,f"127.0.0.1:{settings.port}",settings.color,(fb_out_pipe, fb_in_pipe)))
+    run.start()
+    time.sleep(0.5)
+
+    # 开始启动 插件进程
     while(1):
         time.sleep(1)
-
