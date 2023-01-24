@@ -1,162 +1,26 @@
-# DotCS Pro 旧版本插件
-# 作者:去幻想乡的老art
-import multiprocessing
-import threading
-import time
-from typing import Any, TextIO
-from . import conn
-from . import color
-from . import date
-import time
-import json
-import os
-import sys
+threadList = []
+exiting = False
+exitDelay = 3
+exitReason = None
+connected = False
+try:
 
-def plugin(server: str, ip: str, colors: str = "", PiPe: multiprocessing.Pipe = None):
-    "DotCS 插件进程管理"
-
-    # 检测 FB 是否启动完成
-    servers = color.info_repalce(f"{colors} {server} §r")
-    while (1):
-        try:
-            connect = conn.ConnectFB(f"{ip}")
-            conn.ReleaseConnByID(connect)
-            time.sleep(1)
-            break
-        except Exception as err:
-            pass
-    color.color("§aFB启动完成", info=f"§e plugin §r {servers}", word_wrapping=False)
-    
-    if os.path.isdir("plugin")==False:os.makedirs("plugin")
-    if os.path.isdir(os.path.join("plugin",str(server)))==False:os.makedirs(os.path.join("plugin",str(server)))
-    Plugin = _Plugin(ip, server, servers, PiPe)
-    Plugin.run()
-    
-    # 读取插件
-    while (1):
-        # 获取通知,是否被堵塞
-        # 如果被堵塞就结束进程
-        date = Plugin.recv().recv()
-        if date['type'] == "listen_error":
-            Plugin.stop()
-            color.color( "§e正在重启插件引擎中", info=f"§e plugin §r {servers}")
-            Plugin.run()
-        elif date['type'] =="exit":
-            Plugin.stop()
-            color.color( "§e旧版本插件引擎已退出,原因:",date["message"], info=f"§e plugin §r {servers}")
-            break
-
-
-class _Plugin:
-    "DotCS 插件系统基础类"
-
-    def __init__(self, ip: str, server: str = None, cserver: str = None, PiPe: multiprocessing.Pipe = None):
-        "插件初始化"
-        self.plugins = {}
-        self.ip = ip
-        self.server = server
-        self.conn = None
-        self.conn_in_Pipe, self.conn_out_Pipe = multiprocessing.Pipe(True)
-        self.cserver = cserver
-        self.fb_PiPe = PiPe
-
-    def run(self):
-        "启动 conn 监听进程"
-        from . import conn
-        while (1):
-            try:
-                connect = conn.ConnectFB(f"{self.ip}")
-                conn.ReleaseConnByID(connect)
-                time.sleep(1)
-                break
-            except Exception as err:
-                pass
-        self.conn = multiprocessing.Process(target=listen, args=(
-            self.ip, (self.conn_in_Pipe, self.conn_out_Pipe), self.cserver, self.fb_PiPe))
-        self.conn.start()
-
-    def load(self):
-        "读取插件"
-
-
-    def stop(self):
-        self.conn.terminate()
-        self.conn.join()
-
-    def recv(self):
-        return self.conn_out_Pipe
-class __color:
-    def __init__(self,cserver):
-        self.cserver = cserver
-    def __call__(self, *args: Any, **kwds: Any) -> Any:
-        kwds["info"] = f"§e plugin §r {self.cserver}"
-        return color.color(*tuple(args),**kwds)
-
-def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
-    "获取 conn 的监听结果,解析由 DotCS 完成(由线程来解析 FB 的数据包的话,会出现cpu没有完全利用的情况)"
-    from . import color as _color
-    import sys,os
-    sys.stdin = os.fdopen(0, "r")  # 打开标准输入流
-    packets_listen = [-100,9,10,63,79]
-    # 远古插件兼容
-    def removeColorInText(text):
-        return text.replace("\033[0;37;34m", "").replace("\033[0;37;32m", "").replace("\033[0;37;36m", "").replace("\033[0;37;31m", "").replace("\033[0;37;35m", "").replace("\033[0;37;33m", "").replace("\033[0;37;90m", "").replace("\033[0;37;2m", "").replace("\033[0;37;94m", "").replace("\033[0;37;92m", "").replace("\033[0;37;96m", "").replace("\033[0;37;91m", "").replace("\033[0;37;95m", "").replace("\033[0;37;93m", "").replace("\033[0;37;1m", "").replace("\033[0m", "").replace("\033[7;37;34m", "").replace("\033[7;37;32m", "").replace("\033[7;37;36m", "").replace("\033[7;37;31m", "").replace("\033[7;37;35m", "").replace("\033[7;37;33m", "").replace("\033[7;37;90m", "").replace("\033[7;37;2m", "").replace("\033[7;37;94m", "").replace("\033[7;37;92m", "").replace("\033[7;37;96m", "").replace("\033[7;37;91m", "").replace("\033[7;37;95m", "").replace("\033[7;37;93m", "").replace("\033[7;37;1m", "")
-
-
-    def getTextColorInTheEnd(text):
-        if "\033[" in text and "m" in text:
-            return "\033[" + text.split("\033[")[-1].split("m")[0] + "m"
-        else:
-            return "\033[0m"
-    threadList = []
-    lastOutputLen = 0
-    lastReplace = False
-    lastReplaceByNext = False
-    print_Py = print
-    color = __color(cserver=cserver)
-    connect = ""
-    def countdown(delay: int | float, msg: str = None) -> None:
-        """
-        控制台显示倒计时的函数
-
-        参数:
-            delay: int | float -> 倒计时时间(秒)
-            msg: str -> 倒计时运行时显示的说明
-        返回: 无返回值
-        """
-        if msg is None:
-            msg = "Countdown"
-        delayStart = time.time()
-        delayStop = delayStart+delay
-        while delay >= 0.01:
-            delay = delayStop-time.time()
-            color("%s: %.2fs" % (msg, delay), replace = True, replaceByNext = True, info = f"§e plugin §r {cserver}")
-            time.sleep(0.1)
-    def exitChatbarMenu(killFB: bool = True, delay: int | float = 3, reason: str = None, force = False,load_Error=False) -> None:
-        _color.color("§4",reason, info=f"§e plugin §r {cserver}", word_wrapping=False)
-        if load_Error:
-            Pipe[0].send({"type":"exit","message":""})
-        else:
-            Pipe[0].send({"type":"listen_error","message":""})
-        return 0
-    import os,sys
+    """""""""
+    DEF PART
+    """""""""
     try:
+        import os
+        pid = os.getpid()
+        os.system("echo DotCS 正在运行, 其进程 pid 为 %d." % pid)
+        # Python 自带库.
         import traceback, socket, datetime, time, json, random, sys, urllib, urllib.parse, platform, sqlite3, threading, struct, hashlib, shutil, base64, ctypes, collections, types, itertools, inspect, _thread as thread
         from typing import Union, List, Dict, Tuple, Set
-    except Exception as err:
-        _color.color("DotCS 旧版本插件兼容模块启动失败,缺少库",str(err), info=f"§e plugin §r {cserver}", word_wrapping=False)
-        Pipe[0].send({"type":"exit","message":""})
-        time.sleep(1)
-        return 0
-    try:
-        import psutil, requests, pymysql, qrcode, websocket, brotli, PIL, rich.console, Crypto.Cipher.DES3,rich
-    except Exception as err:
-        _color.color("§eDotCS 旧版本插件兼容模块启动失败,缺少库",str(err), info=f"§e plugin §r {cserver}", word_wrapping=False)
-        Pipe[0].send({"type":"exit","message":""})
-        time.sleep(1)
-        return 0
-    try:
-        # 第三方本地库.
+        # pip 可下载到的库.
+        # pip freeze>modules.txt
+        # pip uninstall -r modules.txt -y
+        # pip install psutil requests pymysql qrcode websocket-client brotli pillow rich numpy pyinstaller==4.9 mido pycryptodome
+        import psutil, requests, pymysql, qrcode, websocket, brotli, PIL, rich.console, Crypto.Cipher.DES3
+        # 第三方库.
         PyPIthird = [
             {"name": "bdx_work_shop", "author": "2401PT, SuperScript", "link": "https://github.com/CMA2401PT/BDXWorkShop"},
             {"name": "FastBuilder connector", "author": "2401PT", "link": "https://github.com/CMA2401PT/FastBuilder"},
@@ -164,34 +28,94 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             {"name": "Space Rectangular Coordinate System", "author": "7912", "link": "None"}
         ]
         for i in PyPIthird:
-            _color.color("DotCS 使用了 §e%s§r 库, 其作者是 §e%s§r, 链接: %s" % (i["name"], i["author"], i["link"]), info = f"§e plugin §r {cserver}")
+            color("DotCS 使用了 §e%s§r 库, 其作者是 §e%s§r, 链接: %s" % (i["name"], i["author"], i["link"]), info = " 信息 ")
         import bdx_work_shop.canvas
         import bdx_work_shop.artists.cmd_midi_music
+        from proxy import conn
         from PyPI import TDES
         from PyPI.SpaceRectangularCoordinateSystem import Point, Line, Cube
+        platformVer = str(platform.platform())
+        if "Windows" in platformVer:
+            platformVer = "Windows"
+        else:
+            platformVer = "Linux"
+        console = rich.console.Console()
+        color("控制台窗口大小: %dx%d" % (console.height, console.width), info = " 信息 ")
+        if console.width < 115:
+            color("§e控制台窗口宽度应大于 115, 请调整.", info = "§e 警告 ")
+        while console.width < 115:
+            color("§e当前宽度: %d" % console.width, replace = True, info = "§e 警告 ")
+            time.sleep(0.01)
+
     except Exception as err:
-        _color.color("§eDotCS 旧版本插件兼容模块启动失败,缺少库",str(err), info=f"§e plugin §r {cserver}", word_wrapping=False)
-        Pipe[0].send({"type":"exit","message":""})
-        time.sleep(1)
-        return 0
+        color("§c导入Python库失败, 信息:\n"+str(err), info = "§c 错误 ")
+        color("§c"+traceback.format_exc(), info = "§c 错误 ")
+        exitChatbarMenu(False, 5)
 
-    platformVer = str(platform.platform())
-    if "Windows" in platformVer:
-        platformVer = "Windows"
-    else:
-        platformVer = "Linux"
-    console = rich.console.Console()
-    _color.color("控制台窗口大小: %dx%d" % (console.height, console.width), info=f"§e plugin §r {cserver}")
-    if console.width < 115:
-        _color.color("§e控制台窗口宽度应大于 115, 请调整.", info=f"§e plugin §r {cserver}")
-    while console.width < 115:
-        _color.color("§e当前宽度: %d" % console.width, replace = True, info=f"§e plugin §r {cserver}")
-        time.sleep(0.01)
-    
 
-    def is_port_used(port: int) -> bool:return False
-    def FBkill() -> None:pass
-    def runFB(killFB: bool = True) -> None:pass
+    def is_port_used(port: int) -> bool:
+        """
+        检测端口是否被占用的函数
+
+        参数:
+            port: int -> 要检测的端口
+        返回:
+            端口未占用: bool -> False
+            端口被占用: bool -> True
+        """
+        portUsed = False
+        for proc in psutil.process_iter():
+            try:
+                if "phoenixbuilder" in proc.name():
+                    if strInList(str(port), proc.cmdline()):
+                        portUsed = True
+            except:
+                pass
+        return portUsed
+
+
+    def FBkill() -> None:
+        """
+        关闭FastBuilder的函数
+        """
+        for proc in psutil.process_iter():
+            try:
+                if "phoenixbuilder" in proc.name():
+                    if strInList(server, proc.cmdline()):
+                        proc.kill()
+                        color("§6已终止 FastBuilder, 其 pid 为 %d" % proc.pid, info = "§6  FB  ")
+            except:
+                pass
+
+
+    def runFB(killFB: bool = True) -> None:
+        """
+        启动FastBuilder的函数
+
+        参数:
+            killFB: bool -> 启动前是否关闭FastBuilder
+        返回: 无返回值
+        """
+        global platformVer, FBport
+        if FBip == "localhost" or FBip == "127.0.0.1":
+            color("§e正在启动 FastBuilder.", info = "§e 加载 ")
+            if killFB:
+                FBkill()
+            if os.path.isfile("nohup.out"):
+                try:
+                    os.remove("nohup.out")
+                    open("nohup.out", "w").write("")
+                except:
+                    pass
+            while is_port_used(FBport):
+                color("§e端口 %d 被占用, 正在切换." % FBport, info = "§e 加载 ")
+                FBport += 10
+            if platformVer == "Windows":
+                os.system('mshta vbscript:createobject("wscript.shell").run("""cmd.exe""/C phoenixbuilder.exe -t fbtoken --code %s --password %s --listen-external 0.0.0.0:%d --no-readline --no-update-check>nohup.out",0)(window.close)' % (server, serverPassword, FBport))
+            else:
+                os.system("nohup ./phoenixbuilder -t fbtoken --code %s --password %s --listen-external 0.0.0.0:%d --no-readline --no-update-check &" % (server, serverPassword, FBport))
+
+
     def Byte2KB(byteSize: int) -> str:
         """
         将字节单位转换为最大能转换的单位的函数
@@ -205,11 +129,15 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
                 byteSize /= 1024
             else:
                 return "%.2f%s" % (byteSize, i)
-    def setglobalVar(key, value):
+
+
+    def setGlobalVar(key, value):
         if value is None:
             globals().__delitem__(value)
         else:
             globals().update({key: value})
+
+
     def fileDownload(url: str, path: str, timeout: float | int = 3, freshSize: int = 10240) -> dict:
         """
         下载文件并显示进度的函数
@@ -230,12 +158,12 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         try:
             response = requests.get(url, stream = True, timeout = timeout)
         except Exception as err:
-            _color.color("§c下载失败, 原因: 文件未找到.", info=f"§e plugin §r {cserver}")
+            color("§c下载失败, 原因: 文件未找到.", info = "§c 错误 ")
             return {"status": "fail", "reason": "file not found"}
         fileDownloadedSize = 0
         fileSize = int(response.headers['content-length'])
         if response.status_code == 200:
-            _color.color("§e开始下载, 文件大小: %s" % Byte2KB(fileSize), info=f"§e plugin §r {cserver}")
+            color("§e开始下载, 文件大小: %s" % Byte2KB(fileSize), info = "§e 下载 ")
             timeDownloadStart = time.time()
             fileDownloadedLastSize = 0
             speedDownloadCurrent = 0
@@ -243,6 +171,9 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             with open(path, 'wb') as file:
                 try:
                     for data in response.iter_content(chunk_size = freshSize):
+                        if exiting:
+                            color("§c下载失败, 原因: 命令系统退出", info = "§c 错误 ")
+                            return {"status": "fail", "reason": "exit"}
                         file.write(data)
                         fileDownloadedSize += len(data)
                         if time.time()-timeDownloadStart >= 0.5:
@@ -251,21 +182,66 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
                             fileDownloadedLastSize = fileDownloadedSize
                             if speedDownloadCurrent != 0:
                                 timeRem = second2minsec((fileSize-fileDownloadedSize)/speedDownloadCurrent)
-                        _color.color("§e正在下载: %.2f%%, %s / %s, %s/s, 预计还需 %s" % (fileDownloadedSize/fileSize*100, Byte2KB(fileDownloadedSize), Byte2KB(fileSize), Byte2KB(speedDownloadCurrent), timeRem), replace = True, info = f"§e plugin §r {cserver}")
+                        color("§e正在下载: %.2f%%, %s / %s, %s/s, 预计还需 %s" % (fileDownloadedSize/fileSize*100, Byte2KB(fileDownloadedSize), Byte2KB(fileSize), Byte2KB(speedDownloadCurrent), timeRem), replace = True, info = "§e 下载 ")
                 except Exception as err:
-                    _color.color("§c下载失败, 原因: 连接超时", info=f"§e plugin §r {cserver}")
+                    color("§c下载失败, 原因: 连接超时", info = "§c 错误 ")
                     return {"status": "fail", "reason": "timed out"}
-            _color.color("§a下载完成", info=f"§e plugin §r {cserver}")
+            color("§a下载完成", info = "§a 成功 ")
             return {"status": "success"}
         else:
-            _color.color("§c下载失败, 原因: 状态码 %s" % response.status_code, info=f"§e plugin §r {cserver}")
+            color("§c下载失败, 原因: 状态码 %s" % response.status_code, info = "§c 错误 ")
             return {"status": "fail", "reason": "server rejected", "status_code": response.status_code}
-    def updateCheck() -> None:pass
+
+
+    def updateCheck() -> None:
+        """
+        检测命令系统更新的函数, 若有更新则自动下载
+        你不应该使用此函数, 命令系统会在启动时运行一次, 启动成功后每60s运行一次
+        """
+        if not(connected):
+            color("§e正在检查更新, 当前版本: %s" % version, info = "§e 信息 ")
+        try:
+            status = requests.get("http://www.dotcs.community/status.txt", timeout = 10)
+            status = status.text.split("\r\n")
+            newversion = status[0].split("version: ")[1]
+            allow = status[1].split("allow: ")[1]
+        except:
+            color("§c检测更新失败, 跳过检测.", info = "§c 错误 ")
+            newversion = version
+            allow = "true"
+        if newversion != version:
+            if platformVer == "Windows":
+                color("§e最新版本: %s, 正在下载." % newversion, info = "§e 信息 ")
+                if fileDownload("http://www.dotcs.community/robot.exe", "robotNew.exe", 5)["status"] == "success":
+                    if os.path.isfile("robotOld.exe"):
+                        os.remove("robotOld.exe")
+                    if os.path.isfile("robot.exe"):
+                        shutil.move("robot.exe", "robotOld.exe")
+                    shutil.move("robotNew.exe", "robot.exe")
+                    color("§a更新下载完成, 正在重启.", info = "§a 成功 ")
+                    exitChatbarMenu(reason = "Auto updating")
+                else:
+                    if os.path.isfile("robotNew.exe"):
+                        os.remove("robotNew.exe")
+                    exitChatbarMenu(reason = "Download failed")
+            else:
+                pass
+        else:
+            if not(connected):
+                color("§a你正在使用最新版本.", info = "§a 信息 ")
+        if allow == "false":
+            reason = status[2].split("msg: ")[1].replace(r"\n", "\n")
+            color("§c%s" % reason, info = "§c 禁止 ")
+            if not(connected):
+                exitChatbarMenu(killFB = False)
+            else:
+                exitChatbarMenu()
+
+
     sendtogroup = ""
     QQgroup = ""
     def NekoMaidMsg(msg, msgIndex, connToSend, isLastFormat = False): pass
-    if os.path.isdir("serverMsg")==False:os.makedirs("serverMsg")
-    def log(text: str, filename: str = None, mode: str = "a", encoding: str = "utf-8", errors: str = "ignore", output: bool = True, sendtogamewithRitBlk: bool = False, sendtogamewithERROR: bool = False, sendtogrp: bool = False, info = f"§e plugin §r {cserver}") -> None:
+    def log(text: str, filename: str = None, mode: str = "a", encoding: str = "utf-8", errors: str = "ignore", output: bool = True, sendtogamewithRitBlk: bool = False, sendtogamewithERROR: bool = False, sendtogrp: bool = False, info = " 信息 ") -> None:
         """
         记录日志的函数
 
@@ -282,24 +258,23 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             filename = "serverMsg/"+datetime.datetime.now().strftime("%Y-%m-%d.txt")
         if text[-1:] == "\n":
             text = text[:-1]
-        info = f"§e plugin §r {cserver}"
         if output:
-            _color.color(text+"\033[0m", info = info)
+            color(text+"\033[0m", info = info)
         try:
             with open(filename, mode, encoding = encoding, errors = errors) as file:
                 file.write("["+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"] "+text+"\n")
         except Exception as err:
-           _color.color("写入日志错误, 信息:\n"+str(err), info=f"§e plugin §r {cserver}",word_wrapping=True)
-        if sendtogamewithRitBlk:
+            color("写入日志错误, 信息:\n"+str(err), info = "§c 错误 ")
+        if sendtogamewithRitBlk and connected:
             tellrawText("@a", "§l§6Ritle§aBlock§r", text = text)
-        if sendtogamewithERROR:
+        if sendtogamewithERROR and connected:
             tellrawText("@a", "§l§4ERROR§r", text = "§c" + text)
         if sendtogrp:
             try:
                 sendtogroup("group", QQgroup, text)
             except Exception as err:
                 errmsg = "log()函数中sendtogroup()报错, 信息:\n"+str(err)
-                log("§c" + errmsg, info = f"§e plugin §r {cserver}")
+                log("§c" + errmsg, info = "§c 错误 ")
         for i in threadList[:]:
             try:
                 if i.name == "与NekoMaid网站通信":
@@ -307,68 +282,55 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
                         NekoMaidMsg(["NekoMaid:console:log", {"level": "INFO", "logger": "net.minecraft.server.v1_16_R3.DedicatedServer", "msg": "%s§r" % "["+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"] "+j.replace("'", 'unchanged'), "time": time.time()*1000}], "42", i.data["conn"], True)
             except:
                 pass
+
+
     FBlog_old = []
-    def FBlogRead() -> str:pass
+    def FBlogRead() -> str:
+        """
+        读取FastBuilder日志的函数
+        你不应该使用此函数, 命令系统会每秒运行1次此函数
+        """
+        if FBip == "localhost" or FBip == "127.0.0.1":
+            global FBlog_old
+            try:
+                with open("nohup.out", "r", encoding = "utf-8") as file:
+                    FBlog = file.readlines()
+                    FBlogNew = []
+                    for i in range(len(FBlog)):
+                        try:
+                            FBlog[i] = FBlog[i].replace("\n", "").replace("\r", "")
+                        except:
+                            pass
+                    if FBlog != FBlog_old:
+                        for i in FBlog:
+                            if i not in FBlog_old:
+                                FBlogNew.append(i)
+                    if FBlogNew != []:
+                        for i in FBlogNew:
+                            color(i, info = "§6  FB  ")
+                        if strInList("ERROR", FBlogNew):
+                            if connected:
+                                FBkill()
+                            else:
+                                exitChatbarMenu(reason = "FastBuilder ERROR", delay = 60)
+                    FBlog_old = FBlog
+                    return FBlog
+            except Exception as err:
+                pass
+        return False
+
+
     gameTime = "00:00:00"
     tps = {"1s": 0, "5s": 0, "20s": 0, "1m": 0, "5m": 0, "10m": 0}
-    def float2int(number: float, way: int = 1) -> int:
-        """
-        小数转整数的函数
-
-        参数:
-            number: float -> 要转换的小数
-            way: 1 | 2 | 3 -> 转换方式
-                1: 四舍五入
-                2: 舍去小数部分
-                3: 若有小数部分, 则入
-        返回: int -> 转换结果
-        """
-        if way == 1:
-            return round(number)
-        elif way == 2:
-            return int(number)
-        elif way == 3:
-            if int(number) == number:
-                return int(number)
-            else:
-                return int(number)+1
-    def floatPos2intPos(number: float | str) -> int:
-        if type(number) == str:
-            number = float(number)
-        if type(number) == int:
-            return number
-        if int(number) == number:
-            return int(number)
-        if number >= 0:
-            return int(number)
-        if number < 0:
-            return int(number)-1
-        raise ValueError("居然能运行到这里, 我也不知道出什么bug了...")
-    def second2minsec(sec: int) -> str:
-        """
-        秒数转正常时间显示的函数
-        比如将 79 转换为 00:01:19
-
-        参数:
-            sec: int -> 要转换的秒数
-        返回: str -> 转换结果
-        """
-        min, sec = divmod(sec, 60)
-        hour, min = divmod(min, 60)
-        hour, min, sec = str(int(hour)), str(int(min)), str(int(sec))
-        if len(hour) == 1:
-            hour = "0" + hour
-        if len(min) == 1:
-            min = "0" + min
-        if len(sec) == 1:
-            sec = "0" + sec
-        return "%s:%s:%s" % (hour, min, sec)
     def getGameTimeRepeat(self) -> None:
+        global gameTime
         gameTimeTickLast = 0
         timeLastGet = 0
         tpsList = [20] * 1200
         while True:
             try:
+                if exiting:
+                    return
                 timeStart = time.time()
                 timeGet = time.time()
                 gameTimeTick = (int(sendcmd("/time query daytime", True, timeout = 20)["OutputMessages"][0]["Parameters"][0])+6000)%24000
@@ -392,8 +354,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
                     tps["10m"] = float("%.2f" % (sum(tpsList[-1200:])/1200))
             except Exception as err:
                 errmsg = "getGameTimeRepeat()函数报错, 信息:\n"+str(err)
-                _color.color("§c"+traceback.format_exc(), info = f"§e plugin §r {cserver}")
-                log("§c" + errmsg, sendtogamewithERROR = False, info = f"§e plugin §r {cserver}")
+                color("§c"+traceback.format_exc(), info = "§c 错误 ")
+                log("§c" + errmsg, sendtogamewithERROR = True, info = "§c 错误 ")
             finally:
                 while time.time() - timeStart < 0.5:
                     constChangeLock.acquire()
@@ -410,49 +372,68 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
                     time.sleep(0.001)
                 gameTimeTickLast = gameTimeTick
                 timeLastGet = timeGet
-    def getType(sth):return sth.__class__.__name__
+
+
     def pluginRepeat(self) -> None:
         """
         命令系统启动后处理repeat类插件的函数
         你不应该使用此函数, 命令系统会自动以新线程运行它
         """
+        global msgList
         timeDict = {"1s": {"time": 1, "timeNow": 0}, "10s": {"time": 10, "timeNow": 0}, "1m": {"time": 60, "timeNow": 0}}
         while True:
+            if exiting:
+                return
             for i in timeDict:
                 if timeDict[i]["timeNow"] == 0:
                     timeDict[i]["timeNow"] = timeDict[i]["time"]
                     msgList.append([-100, {"pluginRunType": "repeat %s" % i}, -1])
                 timeDict[i]["timeNow"] -= 1
             time.sleep(1)
+
+
     def othersRepeat(self) -> None:
         """
         命令系统启动后每60秒运行1次的函数
         你不应该使用此函数, 命令系统会自动以新线程运行它
         """
+        global allplayers, FBlog
         while True:
             timeStart = time.time()
             try:
-                allplayers = getTarget('@a[name=!"%s"]' % robotname, timeout = 60)
+                if connected:
+                    updateCheck()
+                    allplayers = getTarget('@a[name=!"%s"]' % robotname, timeout = 60)
             except Exception as err:
                 pass
             finally:
                 while time.time() - timeStart < 60:
+                    if exiting:
+                        return
+                    if not connected:
+                        FBlog = FBlogRead()
                     time.sleep(1)
+
+
     def _delayExec(self):
         timeDelay = self.data["delay"]
         func = self.data["func"]
         time.sleep(timeDelay)
         try:
             if type(func).__name__ == "str":
-                exec(func,__locals)
+                exec(func)
             else:
                 func()
         except Exception as err:
             errmsg = "延迟执行报错, 信息:\n"+str(err)
-            _color.color("§c"+traceback.format_exc(), info = f"§e plugin §r {cserver}")
-            log("§c" + errmsg, info = f"§e plugin §r {cserver}", sendtogamewithERROR = False)
+            color("§c"+traceback.format_exc(), info = "§c 错误 ")
+            log("§c" + errmsg, info = "§c 错误 ", sendtogamewithERROR = True)
+
+
     def delayExec(func, delay):
         createThread("延迟执行", data = {"delay": delay, "func": func}, func = _delayExec, output = False)
+
+
     def getPlayerData(dataName: str, playerName: str, writeNew: str = "") -> (str | int | float):
         """
         获取玩家本地数据的函数
@@ -495,6 +476,7 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             except:
                 pass
         return data
+
     def setPlayerData(dataName: str, playerName: str, dataValue, writeNew: str = ""):
         """
         设置玩家本地数据的函数
@@ -528,6 +510,7 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         with open(fileDir, "w", encoding = "utf-8", errors = "ignore") as file:
             file.write(str(dataValue))
         return dataValue
+
     def addPlayerData(dataName: str, playerName: str, dataValue, dataType: str = "int", writeNew: str = ""):
         """
         增加/追加玩家本地数据的函数
@@ -566,6 +549,70 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             return dataValue
         else:
             raise Exception("dataType error")
+
+
+    def getType(sth):
+        return sth.__class__.__name__
+
+
+    def float2int(number: float, way: int = 1) -> int:
+        """
+        小数转整数的函数
+
+        参数:
+            number: float -> 要转换的小数
+            way: 1 | 2 | 3 -> 转换方式
+                1: 四舍五入
+                2: 舍去小数部分
+                3: 若有小数部分, 则入
+        返回: int -> 转换结果
+        """
+        if way == 1:
+            return round(number)
+        elif way == 2:
+            return int(number)
+        elif way == 3:
+            if int(number) == number:
+                return int(number)
+            else:
+                return int(number)+1
+
+
+    def floatPos2intPos(number: float | str) -> int:
+        if type(number) == str:
+            number = float(number)
+        if type(number) == int:
+            return number
+        if int(number) == number:
+            return int(number)
+        if number >= 0:
+            return int(number)
+        if number < 0:
+            return int(number)-1
+        raise ValueError("居然能运行到这里, 我也不知道出什么bug了...")
+
+
+    def second2minsec(sec: int) -> str:
+        """
+        秒数转正常时间显示的函数
+        比如将 79 转换为 00:01:19
+
+        参数:
+            sec: int -> 要转换的秒数
+        返回: str -> 转换结果
+        """
+        min, sec = divmod(sec, 60)
+        hour, min = divmod(min, 60)
+        hour, min, sec = str(int(hour)), str(int(min)), str(int(sec))
+        if len(hour) == 1:
+            hour = "0" + hour
+        if len(min) == 1:
+            min = "0" + min
+        if len(sec) == 1:
+            sec = "0" + sec
+        return "%s:%s:%s" % (hour, min, sec)
+
+
     def getTarget(sth: str, timeout: bool | int = 1) -> list:
         """
         获取租赁服内对应目标选择器实体的函数
@@ -587,6 +634,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             return [result]
         else:
             return result.split(", ")
+
+
     def getScoreboardList() -> list:
         result = []
         resultList = sendcmd("/scoreboard objectives list", True)["OutputMessages"]
@@ -598,6 +647,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
                 scoreboardDisplayName = scoreboard["Parameters"][1]
                 result.append(scoreboardCmdName)
         return result
+
+
     def getTickingAreaList() -> dict:
         result = {}
         resultList = sendcmd("/tickingarea list all-dimensions", True)["OutputMessages"]
@@ -616,6 +667,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
                 result[tickareaName] = {"dimension": tickareaDimension}
                 result[tickareaName].update(tickareaPos)
         return result
+
+
     def getTag(targetName) -> list:
         result = []
         resultList = sendcmd("/tag %s list" % targetName, True)["OutputMessages"][0]
@@ -630,6 +683,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         for tag in resultList["Parameters"][2].split(", "):
             result.append(tag[2:])
         return {"targetNum": targetNum, "tag": result}
+
+
     def getBlock(x, y, z):
         result = sendcmd("/testforblock %d %d %d structure_void" % (x, y, z), True)["OutputMessages"][0]
         if result["Success"] == True:
@@ -637,6 +692,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         if result["Message"] != "commands.testforblock.failed.tile":
             raise Exception(result["Message"])
         return result["Parameters"][3][6:-5]
+
+
     def getMultiBlock(startX, startY, startZ, endX, endY, endZ):
         """
         获取主世界一处范围内的方块的函数 (区域需要被加载)
@@ -673,6 +730,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
                 raise Exception(result["Message"])
             resultList["%s %s %s" % tuple(result["Parameters"][0:3])] = result["Parameters"][3][6:-5]
         return resultList
+
+
     def getScore(scoreboardNameToGet: str, targetNameToGet: str) -> int:
         """
         获取租赁服内对应计分板数值的函数
@@ -717,6 +776,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
                     return result[targetNameToGet][scoreboardNameToGet]
         except KeyError as err:
             raise Exception("Failed to get score: %s" % str(err))
+
+
     def getPos(targetNameToGet: str, timeout: float | int = 1) -> dict:
         """
         获取租赁服内玩家坐标的函数
@@ -750,6 +811,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
                 return list(result.values())[0]
             else:
                 return result[targetNameToGet]
+
+
     def getItem(targetName: str, itemName: str, itemSpecialID: int = -1) -> int:
         """
         获取租赁服内玩家某物品个数的函数
@@ -769,6 +832,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             return 0
         else:
             return int(result["OutputMessages"][0]["Parameters"][1])
+
+
     def getStatus(statusName: str) -> str:
         """
         获取状态数据的函数
@@ -783,6 +848,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         with open("status/%s.txt" % statusName, "r", encoding = "utf-8") as file:
             status = file.read()
         return status
+
+
     def setStatus(statusName: str, status):
         """
         设置状态数据的函数
@@ -795,6 +862,9 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         """
         with open("status/%s.txt" % statusName, "w", encoding = "utf-8") as file:
             file.write(str(status))
+
+
+
     def QRcode(text: str, where: str = "return", who: str | None = None) -> None:
         """
         在控制台或租赁服输出二维码的函数
@@ -824,7 +894,7 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         if where == "return":
             return QRstring
         if where == "console":
-            _color.color(QRstring.replace("0", "\033[0;37;7m  ").replace("1", "\033[0m  ")+"§r", info=f"§e plugin §r {cserver}")
+            color(QRstring.replace("0", "\033[0;37;7m  ").replace("1", "\033[0m  ")+"§r")
         if where == "chatbar":
             for line in QRstring.split("\n"):
                 tellrawText(who, text = "§l"+line.replace("0", "§f▓").replace("1", "§0▓"))
@@ -832,7 +902,9 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             sendwocmd("/title %s actionbar §l" % who + QRstring.replace("0", "§f█").replace("1", "§0█") + "\n" * 15)
     "\033[0m  " "\033[0;37;7m  "
     "§0█" "§f█"
-    "▓"    
+    "▓"
+
+
     sendcmdResponse = {}
     def sendcmd(cmd: str, waitForResponse: bool = False, timeout: float | int = 1) -> None:
         """
@@ -855,9 +927,10 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         报错:
             TimeoutError: 等待命令执行结果超时.
         """
+        global sendcmdResponse
         if cmd[0] == "/":
             cmd = cmd[1:]
-        uuid = conn.SendMCCommand(connect, cmd).decode("utf-8")
+        uuid = conn.SendMCCommand(connID, cmd).decode("utf-8")
         if not waitForResponse:
             return uuid
         else:
@@ -871,6 +944,7 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             result = sendcmdResponse[uuid]
             del sendcmdResponse[uuid]
             return result
+
     def sendmulticmd(cmds: list[str], waitForResponse: bool = False, timeout: float | int = 1) ->list[dict]:
         """
         以 WebSocket 身份发送多条指令到租赁服的函数
@@ -908,13 +982,14 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             >>> print(sendmulticmd(cmds, "True"))
             [命令1执行结果, 命令2执行结果, 命令3执行结果]
         """
+        global sendcmdResponse
         resultList = []
         uuidList = []
         startTime = time.time()
         for cmd in cmds:
             if cmd[0] == "/":
                 cmd = cmd[1:]
-            uuid = conn.SendMCCommand(connect, cmd).decode("utf-8")
+            uuid = conn.SendMCCommand(connID, cmd).decode("utf-8")
             if not waitForResponse:
                 resultList.append(uuid)
             else:
@@ -932,6 +1007,7 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             resultList.append(sendcmdResponse[uuid])
             del sendcmdResponse[uuid]
         return resultList
+
     def sendplayercmd(cmd: str, waitForResponse: bool = False) -> None:
         """
         以 玩家(FastBuilder机器人) 身份发送指令到租赁服的函数
@@ -953,9 +1029,10 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         报错:
             TimeoutError: 等待命令执行结果超时.
         """
+        global sendcmdResponse
         if cmd[0] == "/":
             cmd = cmd[1:]
-        uuid = conn.SendWSCommand(connect, cmd).decode("utf-8")
+        uuid = conn.SendWSCommand(connID, cmd).decode("utf-8")
         if not waitForResponse:
             return uuid
         else:
@@ -969,6 +1046,7 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             result = sendcmdResponse[uuid]
             del sendcmdResponse[uuid]
             return result
+
     def sendwocmd(cmd: str) -> None:
         """
         以最高权限(租赁服控制台)身份发送指令到租赁服的函数
@@ -982,8 +1060,9 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         if cmd[0] == "/" or cmd[0] == "!":
             cmd = cmd[1:]
         if cmd.startswith("stop"):
-            _color.color("You can not use the command 'stop'.",info=f"§e plugin §r {cserver}")
-        conn.SendNoResponseCommand(connect, cmd)
+            exitChatbarMenu(reason = "You can not use the command 'stop'.")
+        conn.SendNoResponseCommand(connID, cmd)
+
     def sendfbcmd(cmd: str) -> None:
         """
         发送命令到FastBuilder的函数
@@ -994,7 +1073,9 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         """
         if cmd[0] == "?":
             cmd = cmd[1:]
-        conn.SendFBCommand(connect, cmd)
+        conn.SendFBCommand(connID, cmd)
+
+
     def tellrawText(who: str, dispname: None | str = None, text: str = None, mode = sendcmd) -> None:
         """
         便捷执行tellraw的函数
@@ -1009,6 +1090,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             mode(r"""/tellraw %s {"rawtext":[{"text":"%s"}]}""" % (who, text.replace('"', '’’').replace("'", '’')))
         else:
             mode(r"""/tellraw %s {"rawtext":[{"text":"<%s> %s"}]}""" % (who, dispname.replace('"', '’’').replace("'", '’'), text.replace('"', '’’').replace("'", '’')))
+
+
     def tellrawScore(scoreboardName: str, targetName: str) -> str:
         """
         返回tellraw计分板格式的函数
@@ -1019,6 +1102,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         返回: str -> tellraw计分板格式
         """
         return '{"score":{"name":"%s","objective":"%s"}}' % (targetName, scoreboardName)
+
+
     def strInList(string: str, list: list) -> bool:
         """
         检测字符串是否在列表里的函数
@@ -1035,6 +1120,8 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             if string in i:
                 return True
         return False
+
+
     PWordResponse = {}
     def prohibitedWordTest(word):
         uuid = sendcmd("%s 测试 %d" % (word, random.randint(0, 100)))
@@ -1046,42 +1133,56 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         else:
             del PWordResponse[uuid]
             return False
-    
+
+
+    msgList = []
+    rev = ""
+    playername = ""
+    allplayers = []
+    robotname = ""
+    XUID2playerName = {}
+    msgLastRecvTime = time.time()
+    itemNetworkID2NameDict = {}
+    itemNetworkID2NameEngDict = {}
+    adminhigh = []
+    savePacket = False
     def processPacket(self) -> None:
         """
         处理FastBuilder发送来的包的函数
         你不应该使用此函数, 命令系统会在运行FastBuilder后以新线程启动此函数
         """
+        global msgLastRecvTime, XUID2playerName, timeSpentFBRun, msgList, server, connID, robotname, allplayers, connected, savePacket
         try:
+            connected = True
             msgList.append([-100, {"pluginRunType": "init"}, -1])
             sendwocmd("changesetting allow-cheats true")
-            _color.color('§e正在检测机器人是否能正常执行指令.', info = f"§e plugin §r {cserver}")
+            color('§e正在检测机器人是否能正常执行指令.', info = "§e 加载 ")
             result = sendcmd("/time add 0", True, timeout = 20)["OutputMessages"][0]
             if result["Success"] == False:
                 if result["Message"] == "commands.generic.unknown":
-                    _color.color("§c执行命令失败: 未知的命令. 有可能是机器人没有op权限.", info = f"§e plugin §r {cserver}")
+                    color("§c执行命令失败: 未知的命令. 有可能是机器人没有op权限.", info = "§c 错误 ")
                 if result["Message"] == "commands.generic.disabled":
-                    _color.color("§c执行命令失败: 此等级未启用作弊. 有可能是未打开允许作弊.", info = f"§e plugin §r {cserver}")
+                    color("§c执行命令失败: 此等级未启用作弊. 有可能是未打开允许作弊.", info = "§c 错误 ")
                 else:
-                    _color.color("§c执行命令失败: %s." % result["Message"], info = f"§e plugin §r {cserver}")
+                    color("§c执行命令失败: %s." % result["Message"], info = "§c 错误 ")
                 raise Exception("Can not execute operator commands.")
 
             sendcmd("/gamemode c")
             sendcmd("/effect @s resistance 999999 19 true")
             sendcmd("/effect @s invisibility 999999 0 true")
 
-            _color.color("§e正在获取机器人游戏名和在线玩家.", info = f"§e plugin §r {cserver}")
+            color("§e正在获取机器人游戏名和在线玩家.", info = "§e 加载 ")
             robotname = getTarget("@s", timeout = 20)[0]
             if ")" in robotname:
-                _color.color("§cFastBuilder 机器人游戏名异常.", info = f"§e plugin §r {cserver}")
+                color("§cFastBuilder 机器人游戏名异常.", info = "§c 错误 ")
                 exitChatbarMenu(reason = "Invalid FastBuilder robot name.")
             if robotname not in adminhigh:
                 adminhigh.append(robotname)
             allplayers = getTarget("@a", timeout = 20)
 
-            _color.color("§e正在检测在线玩家的游戏名中是否包含违禁词.", info = f"§e plugin §r {cserver}")
+            color("§e正在检测在线玩家的游戏名中是否包含违禁词.", info = "§e 加载 ")
             for i in allplayers[:]:
-                _color.color("§e正在检测: %s" % i, info = f"§e plugin §r {cserver}")
+                color("§e正在检测: %s" % i, replace = True, replaceByNext = True, info = "§e 加载 ")
                 hasPWord = False
                 if getPlayerData("prohibitedWord", i, "False") == "False":
                     if prohibitedWordTest(i):
@@ -1090,19 +1191,19 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
                 else:
                     hasPWord = True
                 if hasPWord:
-                    _color.color("§c玩家 %s 的游戏名中包含违禁词, 正在踢出." % i, info = f"§e plugin §r {cserver}")
+                    color("§c玩家 %s 的游戏名中包含违禁词, 正在踢出." % i, info = "§c 警告 ")
                     sendwocmd('/kick "%s" §c您的名称内有违禁词, 无法进服.' % i)
                     allplayers.remove(i)
 
-            _color.color("§e正在获取在线玩家的XUID.", info = f"§e plugin §r {cserver}")
+            color("§e正在获取在线玩家的XUID.", info = "§e 加载 ")
             for i in allplayers:
-                _color.color("§e正在获取: %s" % i, info = f"§e plugin §r {cserver}")
+                color("§e正在获取: %s" % i, replace = True, replaceByNext = True, info = "§e 加载 ")
                 result = sendcmd('/querytarget @a[name="%s"]' % i, True, timeout = 20)["OutputMessages"][0]
                 if result["Success"] == False:
                     raise Exception("Failed to get the XUID.")
                 XUID2playerName[json.loads(result["Parameters"][0])[0]["uniqueId"][-8:]] = i
             for i in allplayers:
-                _color.color("§e正在验证: %s" % i,info = f"§e plugin §r {cserver}")
+                color("§e正在验证: %s" % i, replace = True, replaceByNext = True, info = "§e 加载 ")
                 if i not in list(XUID2playerName.values()):
                     raise Exception("Failed to get the XUID.")
             allplayers.remove(robotname)
@@ -1111,9 +1212,9 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             createThread("获取租赁服游戏时间并计算tps", data = {}, func = getGameTimeRepeat)
             createThread("执行repeat类插件", data = {}, func = pluginRepeat)
 
-            timeSpentRun = 0
-            timeSpentDotCSRun = 0
-            _color.color("§a成功启动 DotCS 旧版本兼容引擎", info = f"§e plugin §r {cserver}")
+            timeSpentRun = float(time.time()-timeStartRun)
+            timeSpentDotCSRun = timeSpentRun-timeSpentFBRun
+            color("§a成功启动 DotCS 社区版, 用时: %.2fs. (DotCS: %.2fs, FB: %.2fs)" % (timeSpentRun, timeSpentDotCSRun, timeSpentFBRun), info = "§a 成功 ")
             tellrawText("@a", "§l§6System§r", '§6".命令"系统成功启动.')
             tellrawText("@a", "§l§6System§r", "§6共加载 §l%d§r§6 个插件/函数." % len(pluginList))
             sendcmd("/time add 0")
@@ -1122,13 +1223,18 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             sendcmd("/effect @s resistance 999999 19 true")
             sendcmd("/effect @s invisibility 999999 0 true")
             sendcmd("/tp @s 100000 100000 100000")
+            if not faststart:
+                color("在控制台输入'faststart'可进入快速启动模式", info = " 提示 ")
+
             log("§6FastBuilder 机器人名: %s" % robotname, info = "§6  FB  ")
             log("§e当前在线玩家: "+(", ".join(allplayers)), info = "§e 信息 ")
 
             while True:
+                if exiting:
+                    return
                 if msgList == []:
                     if time.time()-msgLastRecvTime >= 45:
-                        log("§c45秒未收到包", info = f"§e plugin §r {cserver}")
+                        log("§c45秒未收到包", info = "§c 错误 ")
                         exitChatbarMenu(reason = "Receive packet timed out")
                     time.sleep(0.01)
                     continue
@@ -1185,7 +1291,7 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
                             else:
                                 hasPWord = True
                             if hasPWord:
-                                log("§c玩家 %s 的游戏名中包含违禁词, 正在踢出." % playername, info = f"§e plugin §r {cserver}")
+                                log("§c玩家 %s 的游戏名中包含违禁词, 正在踢出." % playername, info = "§c 警告 ")
                                 sendwocmd('/kick "%s" §c您的名称内有违禁词, 无法进服.' % playername)
                                 continue
                             pluginRunType = "player prejoin"
@@ -1235,10 +1341,10 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
 
                 for plugin in pluginList:
                     if plugin.enable:
-                        for pluginType in ["packet %d" % packetType, pluginRunType]:
+                        for pluginType in ["packet -1", "packet %d" % packetType, pluginRunType]:
                             try:
                                 if pluginType in plugin.pluginCode:
-                                    exec(plugin.pluginCode[pluginType],__locals)
+                                    exec(plugin.pluginCode[pluginType])
                             except PluginSkip: # 感谢SuperScript提供的建议.
                                 pass
                             except Exception as err:
@@ -1246,29 +1352,99 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
 
                                 # 更好地输出错误信息.
                                 console.print_exception(width = int(console.width*0.9))
-                                # color("§c"+traceback.format_exc(), info = f"§e plugin §r {cserver}")
+                                # color("§c"+traceback.format_exc(), info = "§c 错误 ")
 
-                                log("§c" + errmsg, sendtogamewithERROR = False, info = f"§e plugin §r {cserver}")
+                                log("§c" + errmsg, sendtogamewithERROR = True, info = "§c 错误 ")
 
 
         except Exception as err:
             errmsg = "信息处理报错, 信息:\n"+str(err)
-            color("§c"+traceback.format_exc(), info = f"§e plugin §r {cserver}")
-            log("§c" + errmsg, info = f"§e plugin §r {cserver}")
+            color("§c"+traceback.format_exc(), info = "§c 错误 ")
+            log("§c" + errmsg, info = "§c 错误 ")
             exitChatbarMenu(reason = "Process packet error.")
 
 
-    msgList = []
-    rev = ""
-    playername = ""
-    allplayers = []
-    robotname = ""
-    XUID2playerName = {}
-    msgLastRecvTime = time.time()
-    itemNetworkID2NameDict = {}
-    itemNetworkID2NameEngDict = {}
-    adminhigh = []
-    savePacket = False
+    def revPacket(self) -> None:
+        """
+        连接FastBuilder并接收其发送来的包的函数
+        你不应该使用此函数, 命令系统会在运行FastBuilder后以新线程启动此函数
+        """
+        global msgLastRecvTime, timeSpentFBRun, msgList, connID, timeStartFBRun, FBlog
+
+        # 尝试连接
+        color("§e正在连接到 FastBuilder.", info = "§e 加载 ")
+        startTime = time.time()
+        while True:
+            try:
+                if exiting:
+                    return
+                connID = conn.ConnectFB("%s:%d" % (FBip, FBport))
+                break
+            except:
+                spendTime = time.time()-startTime
+                if spendTime >= 60:
+                    color("§cFastBuilder超过60秒未连接上租赁服, 正在退出.", info = "§c 错误 ")
+                    exitChatbarMenu(reason = "FastBuilder timed out.")
+                color("§e正在连接到 FastBuilder, %.2fs" % spendTime, replace = True, replaceByNext = True, info = "§e 加载 ")
+                time.sleep(0.01)
+
+        # 连上了
+        color("§a成功连接到 FastBuilder.", info = "§a 成功 ")
+        timeSpentFBRun = float(time.time()-timeStartFBRun)
+        msgRecved = False
+
+        # 开始收取聊天信息
+        packetNum = 0
+        while True:
+            try:
+                if exiting:
+                    return
+                packetNum += 1
+                bytesPkt = conn.RecvGamePacket(connID)
+                packetType = conn.inspectPacketID(bytesPkt)
+                msgLastRecvTime = time.time()
+                if not msgRecved:
+                    msgRecved = True
+                if packetNum == 1:
+                    createThread("处理数据包", {}, processPacket)
+                # if packetType == 39 or packetType == 40 or packetType == 111 or packetType == 123 or packetType == 58 or packetType == 108 or packetType == 158 or packetType == 67:
+                #     continue
+                jsonPkt = json.loads(conn.GamePacketBytesAsIsJsonStr(bytesPkt))
+                pluginRunType = "packet on another thread %d" % packetType
+                if packetType == 79:
+                    uuid = jsonPkt["CommandOrigin"]["UUID"]
+                    for i in list(sendcmdResponse):
+                        if i == uuid:
+                            sendcmdResponse[i] = jsonPkt
+                    for i in list(PWordResponse):
+                        if i == uuid:
+                            PWordResponse[i] = True
+                if savePacket:
+                    msgList.append([packetType, jsonPkt, packetNum])
+                for i in pluginList:
+                    try:
+                        if i.enable and pluginRunType in i.pluginCode:
+                            exec(i.pluginCode[pluginRunType])
+                    except Exception as err:
+                        errmsg = "插件 %s %s 报错, 信息:\n%s" % (i.pluginName, pluginRunType, str(err))
+                        color("§c"+traceback.format_exc(), info = "§c 错误 ")
+                        log("§c" + errmsg, sendtogamewithERROR = True, info = "§c 错误 ")
+
+            except Exception as err:
+                errmsg = "收取数据包报错, 信息:\n"+str(err)
+                color("§c"+traceback.format_exc(), info = "§c 错误 ")
+                log("§c" + errmsg, info = "§c 错误 ")
+                exitChatbarMenu(reason = "Receive packet error.")
+
+
+    def consoleInput(self) -> None:
+        """
+        控制台执行代码或使用聊天栏菜单的函数
+        你不应该使用此函数, 命令系统会启动时以新线程运行此函数
+        """
+        
+
+
 
     """""""""""
     CLASS PART
@@ -1311,6 +1487,7 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
     const = _const()
     const2 = _const()
 
+
     class createThread(threading.Thread):
         def __init__(self, name, data = {}, func = "", output = True):
             threading.Thread.__init__(self)
@@ -1318,6 +1495,7 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             self.data = data
             self.func = func
             self.stopping = False
+            self.daemon = True
             self.output = output
             threadList.append(self)
             self.start()
@@ -1325,21 +1503,21 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
         def run(self):
             try:
                 if self.output:
-                    _color.color("§e启动线程 %s." % self.name, info = f"§e plugin §r {cserver}")
+                    color("§e启动线程 %s." % self.name, info = "§e 线程 ")
                 if getType(self.func) != "str":
                     self.func(self)
                 else:
-                    exec("%s(self)" % self.func,__locals)
+                    exec("%s(self)" % self.func)
             except Exception as err:
                 errmsg = ("线程 %s 报错, 信息:\n" % self.name)+str(err)
-                _color.color("§c"+traceback.format_exc(), info = f"§e plugin §r {cserver}")
-                log("§c" + errmsg, sendtogamewithERROR = False, info = f"§e plugin §r {cserver}")
+                color("§c"+traceback.format_exc(), info = "§c 错误 ")
+                log("§c" + errmsg, sendtogamewithERROR = True, info = "§c 错误 ")
             except SystemExit as err:
                 pass
                 # color("§eThread %s has been terminated forcely." % self.name)
             finally:
                 if self.output:
-                    _color.color("§e终止线程 %s." % self.name, info = f"§e plugin §r {cserver}")
+                    color("§e终止线程 %s." % self.name, info = "§e 线程 ")
                 threadList.remove(self)
 
         def get_id(self):
@@ -1351,14 +1529,14 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
 
         def stop(self):
             self.stopping = True
-            # _color.color("§eTerminating thread %s." % self.name)
+            # color("§eTerminating thread %s." % self.name)
             thread_id = self.get_id()
             res = ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, ctypes.py_object(SystemExit))
             if res > 1:
                 ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
-                _color.color("§c终止线程失败", info = f"§e plugin §r {cserver}")
+                color("§c终止线程失败", info = "§c 错误 ")
 
-    
+
     pluginList = []
     class plugin():
         def __init__(self, pluginName, pluginCode):
@@ -1368,197 +1546,160 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
             self.globals = globals()
             self.locals = {}
             pluginList.append(self)
-    server = "123456"
-    version = date.version
-    # 加载插件
-    # if "获取玩家手持物品.py" in os.listdir("plugin"):
-    #     os.remove("plugin/获取玩家手持物品.py")
-    # if getStatus("pluginupdate1") != "update":
-    #     fileDownload("http://www.dotcs.community/update/获取玩家手持物品或装备.py", "plugin/获取玩家手持物品或装备.py")
-    #     setStatus("pluginupdate1", "update")
-    _color.color("§e正在加载插件.", info = f"§e plugin §r {cserver}")
-    _color.color("§e[总进度 0/3] 初始化.", info = f"§e plugin §r {cserver}")
-    if os.path.isdir("plugin/old/data/temp"):
-        shutil.rmtree("plugin/old/data/temp")
-    os.makedirs("plugin/old/data/temp")
-    os.makedirs("plugin/old/data/temp/文件夹说明：这是插件加载的临时文件夹.")
-    os.makedirs("plugin/old/data/temp/文件夹说明：请不要修改这里的内容. （改了也没用）")
-    _color.color("§e[总进度 1/3] 正在读取插件.", info = f"§e plugin §r {cserver}")
-    pluginlist = []
-    pluginCode = None
-    pluginCodeDict = {}
-    pluginCodeList = []
-    i = None
-    for filename in os.listdir("plugin/old"):
-        if filename.endswith(".py") or filename.endswith(".py.enc"):
-            pluginlist.append(filename)
-    for i in range(len(pluginlist)):
-        filename = pluginlist[i]
-        _color.color("§e[总进度 1/2][插件 %d/%d] 加载插件: %s" % (i+1, len(pluginlist), filename), info = f"§e plugin §r {cserver}")
-        with open("plugin/old/"+filename, "rb") as file:
-            if filename.endswith(".py.enc"):
-                pluginCode = TDES.decrypt(file.read(), "DotCS Community plugin.", False)
-            else:
-                pluginCode = file.read()
-            pluginCodeList = pluginCode.decode("utf-8").replace("\r", "").split("# PLUGIN TYPE: ")[1:]
-            pluginCodeDict = {}
-            for i in pluginCodeList:
-                pluginType = i.split("\n", 1)[0]
-                pluginCode = i.split("\n", 1)[1]
-                filenameTemp = "plugin/old/data/temp/%s_%s" % (filename, pluginType)
-                pluginCodeDict[pluginType] = compile(pluginCode, filename = filenameTemp, mode = "exec")
-                with open(filenameTemp, "w", encoding = "utf-8") as file:
-                    file.write(pluginCode)
-            plugin(filename, pluginCodeDict)
-    del pluginlist, pluginCode, pluginCodeList, pluginCodeDict, i
-    _color.color("§e[总进度 2/3] 正在执行 def 类型插件.", info = f"§e plugin §r {cserver}")
-    pluginRunType = "def"
-    pluginIndex = 0
-    __locals  = locals()
-    for i in pluginList:
-        pluginIndex += 1
-        _color.color("§e[总进度 2/3][插件 %d/%d] 执行插件: %s" % (pluginIndex, len(pluginList), i.pluginName), info = f"§e plugin §r {cserver}")
+
+
+    """""""""""""""
+      RUNNING PART
+    """""""""""""""
+    if __name__ == "__main__":
+        version = "v0.10.10" # 设置版本号
+        timeStartRun = time.time() # 记录启动时间
+        FBip = "127.0.0.1"
+        FBport = 8000
+        if os.path.isfile("robotOld.exe"):
+            os.remove("robotOld.exe")
+        if os.path.isfile("robotNew.exe"):
+            os.remove("robotNew.exe")
+        faststart = getStatus("faststart")
+        if not faststart:
+            countdown(0.1, "§e命令系统即将开始启动")
+
+        # color(title4)
+        color('§b".命令"系统社区版 - 租赁服聊天栏菜单\n".Dot" Command System Community(DotCS)\nDotCS基于FastBuilder.\n社区版作者: 7912\n其官方插件作者: 7912, Pomelo', info = "§b 信息 ")
+        color('§b用户交流群: 833303126', info = "§b 信息 ")
+        if not faststart:
+            countdown(3, "§e请阅读说明")
+
+        # 检测fbtoken文件
+        if "fbtoken" not in os.listdir():
+            color("§c请下载fbtoken, 放进目录后重启.", info = "§c 错误 ")
+            exitChatbarMenu(delay = 60, reason = "fbtoken not found")
+
+        color("FastBuilder 连接地址: %s:%d" % (FBip, FBport), info = " 信息 ")
+
+        # 如果租赁服号未设置, 则请求输入租赁服号并存入server.txt
+        color("§e正在读取租赁服配置信息.", info = "§e 加载 ")
+        if not os.path.isfile("server.txt"):
+            json.dump({"code": "0", "password": "0"}, open("server.txt", "w", encoding = "utf-8"), indent = 4, ensure_ascii = True, sort_keys = True)
+        serverConfig = json.load(open("server.txt", "r", encoding = "utf-8"))
         try:
-            if i.enable and pluginRunType in i.pluginCode:
-                exec(i.pluginCode[pluginRunType],__locals)
-        except Exception as err:
-            errmsg = "插件 %s %s 报错, 信息:\n%s" % (i.pluginName, pluginRunType, str(err))
-            _color.color("§c"+traceback.format_exc(), info = f"§e plugin §r {cserver}")
-            log("§c" + errmsg, sendtogamewithERROR = False, info = f"§e plugin §r {cserver}")
-            exitChatbarMenu(delay = 60, reason = "Load plugin %s %s error in step 2." % (i.pluginName, pluginRunType),load_Error=True)
-    # for pluginType in ["packet %d" % packetType, pluginRunType]:
-    # try:
-    #     if pluginType in plugin.pluginCode:
-    #         exec(plugin.pluginCode[pluginType],__locals)
-    for _ in pluginList:
-        for i in _.pluginCode:
-            
-            if i.split(" ")[0] == "packet":
-                print()
-                try:
-                    packets_listen.append(int(i.split(" ")[1]))
-                except Exception as err:
-                    pass
-    _color.color("§a成功加载所有插件.", info = f"§e plugin §r {cserver}")
-    # createThread("收取数据包", data = {}, func = revPacket)
-    # createThread("检测命令系统更新并校准在线玩家", data = {}, func = othersRepeat)
+            server, serverPassword = str(serverConfig["code"]), str(serverConfig["password"])
+        except:
+            json.dump({"code": "0", "password": "0"}, open("server.txt", "w", encoding = "utf-8"), indent = 4, ensure_ascii = True, sort_keys = True)
+            server, serverPassword = "0", "0"
+        json.dump({"code": server, "password": serverPassword}, open("server.txt", "w", encoding = "utf-8"), indent = 4, ensure_ascii = True, sort_keys = True)
+        if server == "0":
+            server = input("Please input your server code: ")
+            json.dump({"code": server, "password": serverPassword}, open("server.txt", "w", encoding = "utf-8"), indent = 4, ensure_ascii = True, sort_keys = True)
+        if serverPassword == "0":
+            serverPassword = input("Please input your server password: ")
+            if not serverPassword:
+                serverPassword = "7912"
+            json.dump({"code": server, "password": serverPassword}, open("server.txt", "w", encoding = "utf-8"), indent = 4, ensure_ascii = True, sort_keys = True)
+
+        FBkill()
+        updateCheck()
+
+        # 加载插件
+        # if "获取玩家手持物品.py" in os.listdir("plugin"):
+        #     os.remove("plugin/获取玩家手持物品.py")
+        # if getStatus("pluginupdate1") != "update":
+        #     fileDownload("http://www.dotcs.community/update/获取玩家手持物品或装备.py", "plugin/获取玩家手持物品或装备.py")
+        #     setStatus("pluginupdate1", "update")
+
+        color("§e正在加载插件.", info = "§e 加载 ")
+        color("§e[总进度 0/2] 初始化.", info = "§e 加载 ")
+        if os.path.isdir("plugin/data/temp"):
+            shutil.rmtree("plugin/data/temp")
+        os.mkdir("plugin/data/temp")
+        os.mkdir("plugin/data/temp/temp文件夹说明：这是插件加载的临时文件夹.")
+        os.mkdir("plugin/data/temp/temp文件夹说明：请不要修改这里的内容. （改了也没用）")
+        color("§e[总进度 1/2] 正在读取插件.", info = "§e 加载 ")
+        pluginlist = []
+        for filename in os.listdir("plugin"):
+            if filename.endswith(".py") or filename.endswith(".py.enc"):
+                pluginlist.append(filename)
+
+        for i in range(len(pluginlist)):
+            filename = pluginlist[i]
+            color("§e[总进度 1/2][插件 %d/%d] 加载插件: %s" % (i+1, len(pluginlist), filename), replace = True, replaceByNext = True, info = "§e 加载 ")
+            with open("plugin/"+filename, "rb") as file:
+                if filename.endswith(".py.enc"):
+                    pluginCode = TDES.decrypt(file.read(), "DotCS Community plugin.", False)
+                else:
+                    pluginCode = file.read()
+                pluginCodeList = pluginCode.decode("utf-8").replace("\r", "").split("# PLUGIN TYPE: ")[1:]
+                pluginCodeDict = {}
+                for i in pluginCodeList:
+                    pluginType = i.split("\n", 1)[0]
+                    pluginCode = i.split("\n", 1)[1]
+                    filenameTemp = "plugin/data/temp/%s_%s" % (filename, pluginType)
+                    pluginCodeDict[pluginType] = compile(pluginCode, filename = filenameTemp, mode = "exec")
+                    with open(filenameTemp, "w", encoding = "utf-8") as file:
+                        file.write(pluginCode)
+                plugin(filename, pluginCodeDict)
+        del pluginlist, pluginCode, pluginCodeList, pluginCodeDict, i
+
+        color("§e[总进度 2/2] 正在执行 def 类型插件.", info = "§e 加载 ")
+        pluginRunType = "def"
+        pluginIndex = 0
+        for i in pluginList:
+            pluginIndex += 1
+            color("§e[总进度 2/2][插件 %d/%d] 执行插件: %s" % (pluginIndex, len(pluginList), i.pluginName), replace = True, replaceByNext = True, info = "§e 加载 ")
+            try:
+                if i.enable and pluginRunType in i.pluginCode:
+                    exec(i.pluginCode[pluginRunType])
+            except Exception as err:
+                errmsg = "插件 %s %s 报错, 信息:\n%s" % (i.pluginName, pluginRunType, str(err))
+                color("§c"+traceback.format_exc(), info = "§c 错误 ")
+                log("§c" + errmsg, sendtogamewithERROR = True, info = "§c 错误 ")
+                exitChatbarMenu(delay = 60, reason = "Load plugin %s %s error in step 2." % (i.pluginName, pluginRunType))
+        color("§a成功加载所有插件.", info = "§a 成功 ")
+
+        # 启动FastBuilder并等待连接.
+        runFB()
+        timeStartFBRun = time.time()
+        color("§e正在等待 FastBuilder 连接到租赁服 %s." % server, info = "§e 加载 ")
+        createThread("控制台执行命令", data = {}, func = consoleInput)
+        createThread("收取数据包", data = {}, func = revPacket)
+        createThread("检测命令系统更新并校准在线玩家", data = {}, func = othersRepeat)
+
+        while not exiting:
+            time.sleep(0.1)
+
+        sys.exit()
 
 
-
-
-
-
-
-
-
-
-
-    connect = ""
-    last_packets_listen_time = time.time()
-
-    def pipe_listen(conn_in_Pipe, conn_out_Pipe):
-        nonlocal packets_listen, connect
-        "输出获取"
-        while (1):
-            date = conn_in_Pipe.recv()
-            match date["type"]:
-                case "listen_add":  # {"type":"listen_add","id":监听数据包类型id:int}
-                    if date["id"] in packets_listen:
-                        conn_in_Pipe.send(
-                            {"type": "error", "messags": f"{date[id]}数据包已被监听"})
-                    else:
-                        packets_listen.append(date["id"])
-                        conn_in_Pipe.send(
-                            {"type": "listen_add", "messags": f"{date[id]}数据包 已添加成功"})
-                case "listen_update":
-                    packets_listen = date["packets_listen"]
-                    conn_in_Pipe.send(
-                        {"type": "packets_listen_update", "messags": f"数据包列表信息已更新 已添加成功"})
-
-    def fb_listen(conn_in_Pipe, fb_out_Pipe):
-        
-        while (1):
-            date = fb_out_Pipe.recv()
-            if date["type"] == "reload":
-                conn_in_Pipe.send(
-                    {"type": "listen_error", "messags": "FB进程关闭重启"})
-                return
-    
-    def time_listen(conn_in_Pipe, conn_out_Pipe):
-        # 引擎超时检测线程
-        nonlocal last_packets_listen_time
-        while time.time()-last_packets_listen_time < 30:
+except:
+    try:
+        if not connected:
+            color("§c"+traceback.format_exc(), info = "§c 错误 ")
+        if exitReason is None:
+            color("§e正在退出, 请稍等.", info = "§e 退出 ")
+        else:
+            color("§e正在退出, 原因: %s" % str(exitReason), info = "§e 退出 ")
+        color("§e正在终止子线程.", info = "§e 线程 ")
+        startTime = time.time()
+        while threadList and time.time() - startTime < 10:
+            for i in threadList[:]:
+                i.stop()
             time.sleep(1)
-        color.color(cserver, "§4哎呀,FB是不是崩了?超时了呀,给爷重启",
-                    info=f"§e plugin §r {cserver}", word_wrapping=False)
-        conn_in_Pipe.send({"type": "listen_error", "messags": "监听超时无反应"})
-
-    pipe_listen_thread = threading.Thread(target=pipe_listen, args=Pipe)
-    pipe_listen_thread.setDaemon(True)
-    pipe_listen_thread.start()
-    time_listen_thread = threading.Thread(target=time_listen, args=Pipe)
-    time_listen_thread.setDaemon(True)
-    time_listen_thread.start()
-    fb_listen_thread = threading.Thread(
-        target=fb_listen, args=(Pipe[0], fb_Pipe[1]))
-    fb_listen_thread.setDaemon(True)
-    fb_listen_thread.start()
-    packetNum = 0
-    while (1):
+        if connected:
+            conn.ReleaseConnByID(connID)
+            time.sleep(0.5)
+        if exitDelay != 0:
+            countdown(exitDelay, "§e正在退出")
+    except:
+        pass
+    finally:
         try:
-            connect = conn.ConnectFB(f"{ip}")
-            connID = connect
-            createThread("处理数据包", {}, processPacket)
-            
-            while True:
-                try:
-                    # 接收游戏数据包
-                    bytesPkt = conn.RecvGamePacket(connect)
-                    # 获得数据包的类型
-                    packetType = conn.inspectPacketID(bytesPkt)
-                    last_packets_listen_time = time.time()
-                    msgLastRecvTime = time.time()
-                    if packetType in packets_listen:
-                        jsonPkt = json.loads(
-                            conn.GamePacketBytesAsIsJsonStr(bytesPkt))
-                        packetNum += 1
-                        # return result
-                        # color.color(cserver,"§a数据包内容§7:§b",load,info="§a plugin §r")
-                        pluginRunType = "packet on another thread %d" % packetType
-                        match packetType:
-                            case 79:
-
-                                uuid = jsonPkt["CommandOrigin"]["UUID"]
-                                
-                                for i in list(sendcmdResponse):
-                                    if i == uuid:
-                                        sendcmdResponse[i] = jsonPkt
-                                for i in list(PWordResponse):
-                                    if i == uuid:
-                                        PWordResponse[i] = True
-                        if savePacket:
-                            msgList.append([packetType, jsonPkt, packetNum])
-                        for i in pluginList:
-                            try:
-                                if i.enable and pluginRunType in i.pluginCode:
-                                    exec(i.pluginCode[pluginRunType],__locals)
-                            except Exception as err:
-                                errmsg = "插件 %s %s 报错, 信息:\n%s" % (i.pluginName, pluginRunType, str(err))
-                                _color.color("§c"+traceback.format_exc(), info = f"§e plugin §r {cserver}")
-                                log("§c" + errmsg, sendtogamewithERROR = False, info = f"§e plugin §r {cserver}")
-                except Exception as err:
-                    _color.color( "§4DotCS 插件监听进程发生了问题:", str(
-                        err), info=f"§e plugin §r {cserver}", word_wrapping=False)
-                    try:
-                        conn.ReleaseConnByID(connect)
-                    except Exception as errs:
-                        _color.color( "§4DotCS 在尝试释放监听接口出了问题,这可能导致内存益处:", str(
-                            errs), info=f"§e plugin §r {cserver}", word_wrapping=False)
-                    # 处理两种数据包的示例,你可以自己选择要处理哪些数据包
-                    Pipe[0].send({"type": "listen_error", "messags": "监听进程崩溃"})
-                    return
-        except Exception as err:
-            _color.color( "§4DotCS 插件监听进程发生了问题:", str(
-                err), info=f"§e plugin §r {cserver}", word_wrapping=False)
-            Pipe[0].send({"type": "listen_error", "messags": "监听进程大崩"})
-            return
+            FBkill()
+        except:
+            pass
+        threadNum = len(threadList)
+        if threadNum >= 1:
+            color("§c强制退出命令系统, %d 个线程还未被终止:" % threadNum, info = "§c 错误 ")
+            for i in range(len(threadList)):
+                color("§c%d. %s" % (i+1, threadList[i].name), info = "§c 错误 ")
+        elif threadNum == 0:
+            color("§a正常退出.", info = "§a 信息 ")

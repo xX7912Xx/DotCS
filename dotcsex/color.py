@@ -1,6 +1,7 @@
 from typing import Literal, TextIO
 import datetime
 import sys
+import re
 from re import escape,compile,findall
 _color_rep = {
     "§1": "\033[0;37;34m",
@@ -48,51 +49,17 @@ del _info_rep
 info_rep_str = "|".join(info_rep.keys())
 info_rep_compile = compile(info_rep_str)
 del info_rep_str
-
-
-def removeColorInText(text):
-    """
-    过滤 color 函数中 info 的彩色字
-    ---
-    参数:
-        text:str 文本
-    返回:
-        str"""
-    return text.replace("\033[0;37;34m", "").replace("\033[0;37;32m", "").replace("\033[0;37;36m", "").replace("\033[0;37;31m", "").replace("\033[0;37;35m", "").replace("\033[0;37;33m", "").replace("\033[0;37;90m", "").replace("\033[0;37;2m", "").replace("\033[0;37;94m", "").replace("\033[0;37;92m", "").replace("\033[0;37;96m", "").replace("\033[0;37;91m", "").replace("\033[0;37;95m", "").replace("\033[0;37;93m", "").replace("\033[0;37;1m", "").replace("\033[0m", "").replace("\033[7;37;34m", "").replace("\033[7;37;32m", "").replace("\033[7;37;36m", "").replace("\033[7;37;31m", "").replace("\033[7;37;35m", "").replace("\033[7;37;33m", "").replace("\033[7;37;90m", "").replace("\033[7;37;2m", "").replace("\033[7;37;94m", "").replace("\033[7;37;92m", "").replace("\033[7;37;96m", "").replace("\033[7;37;91m", "").replace("\033[7;37;95m", "").replace("\033[7;37;93m", "").replace("\033[7;37;1m", "")
-
-
-def removeColorMC(text: str) -> str:
-    """
-    过滤mc的彩色字
-    ---
-    参数:
-        text:文本
-    返回:
-        str
-    """
-    return text.replace("§0", "\033[0;37;30m").replace("§1", "").replace("§2", "").replace("§3", "").replace("§4", "").replace("§5", "").replace("§6", "").replace("§7", "").replace("§8", "").replace("§9", "").replace("§a", "").replace("§b", "").replace("§c", "").replace("§d", "").replace("§e", "").replace("§f", "m").replace("§r", "")
-
-
-def getTextColorInTheEnd(text: str) -> str:
-    """
-    获取 Text 的结尾内容并返回对应代码
-    ---
-    参数:
-        text:文本
-    返回:
-        str
-    """
-    if "\033[" in text and "m" in text:
-        return "\033[" + text.split("\033[")[-1].split("m")[0] + "m"
-    else:
-        return "\033[0m"
 def info_repalce(text: str) -> str:
-    return info_rep_compile.sub(lambda m: info_rep[escape(m.group(0))], text)
-
+    if type(text)==str:
+        return info_rep_compile.sub(lambda m: info_rep[escape(m.group(0))], text)
+    else:
+        raise TypeError(f"{text}并不是str类型")
 
 def color_replace(text: str) -> str:
-    return color_rep_compile.sub(lambda m: color_rep[escape(m.group(0))], text)
-
+    if type(text)==str:
+        return color_rep_compile.sub(lambda m: color_rep[escape(m.group(0))], text)
+    else:
+        raise TypeError(f"{text}并不是str类型")
 
 def color(*values, output: bool = True, end: str = '\n', replace: bool = False, replaceByNext: bool = False, info: str | bool = " 信息 ", sep=' ', file: TextIO = sys.stdout, flush=False, word_wrapping: bool = True, text: str = None, is_time: bool = True, end_not_replace: bool = False, no_color: int = 0, title_time: str = "[%H:%M:%S] ", color_mode: int = 0, **date) -> None | str:
     """
@@ -115,7 +82,7 @@ def color(*values, output: bool = True, end: str = '\n', replace: bool = False, 
             False: 不做任何影响
         info: str -> 输出内容前的反色信息.(默认使用 文本的第一个彩色字符)
         flush: 是否强制冲刷流(如果output值为 True,则会在 end 输出后执行)
-        word_wrapping : bool -> 是否自动换行输出(会将所有的\n进行处理)(默认为 True)
+        word_wrapping : bool -> 是否在折行时,自动在前面补充其文本内容
         is_time : 是否在终端显示时间(默认为 False)
         end_not_replace : 输出的内容结尾是否不添加彩色字的重置符(默认False)
         title_time: 格式化时间 ,默认值 "[%H:%M:%S] "
