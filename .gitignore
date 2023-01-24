@@ -4,5 +4,6 @@
 phoenixbuilder.exe
 build*
 dist*
-dotcsex.__pycache__*
+dotcsex.__pycache__.*
 __init__.spec
+__pycache__*
