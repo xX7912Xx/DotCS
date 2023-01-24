@@ -23,7 +23,7 @@ def plugin(server: str, ip: str, colors: str = "", PiPe: multiprocessing.Pipe = 
         except Exception as err:
             pass
     color.color(servers, "§aFB启动完成", info="§a plugin §r", word_wrapping=False)
-    color.color(servers,os.getcwd (), info="§a plugin §r", word_wrapping=False)
+    
     if os.path.isdir("plugin")==False:os.makedirs("plugin")
     if os.path.isdir(os.path.join("plugin",str(server)))==False:os.makedirs(os.path.join("plugin",str(server)))
     Plugin = _Plugin(ip, server, servers, PiPe)
@@ -102,7 +102,9 @@ def listen(ip: str, Pipe, cserver: str, fb_Pipe: multiprocessing.Pipe = None):
                         conn_in_Pipe.send(
                             {"type": "listen_add", "messags": f"{date[id]}数据包 已添加成功"})
                 case "listen_update":
-                    pass
+                    packets_listen = date["packets_listen"]
+                    conn_in_Pipe.send(
+                        {"type": "packets_listen_update", "messags": f"数据包列表信息已更新 已添加成功"})
 
     def fb_listen(conn_in_Pipe, fb_out_Pipe):
         while (1):
