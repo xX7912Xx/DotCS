@@ -1,8 +1,3 @@
 # DotCS 社区版
-版本 0.13.0
-
-文档:
-
-[DotCS 插件事件文档](docs/DotCS 插件事件event.md)
-
-[DotCS 插件api文档](docs/DotCS 插件api.md)
+版本 0.13.0a1
+本存储库存储的是 0.12.1及其以前版本的内容,0.13.0开始闭源
