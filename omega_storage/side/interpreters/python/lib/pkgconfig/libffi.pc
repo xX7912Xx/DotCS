@@ -1,0 +1,11 @@
+prefix=/home/dai/projects/PhoenixBuilder/omega/components/omega_side/plantform_specific_python_/linux_amd64/interpreters/python
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+toolexeclibdir=${libdir}
+includedir=/home/dai/projects/PhoenixBuilder/omega/components/omega_side/plantform_specific_python_/linux_amd64/interpreters/python/include
+
+Name: libffi
+Description: Library supporting Foreign Function Interfaces
+Version: 3.3
+Libs: -L${toolexeclibdir} -lffi
+Cflags: -I${includedir}

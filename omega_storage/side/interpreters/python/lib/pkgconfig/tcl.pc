@@ -1,0 +1,15 @@
+# tcl pkg-config source file
+
+prefix=/home/dai/projects/PhoenixBuilder/omega/components/omega_side/plantform_specific_python_/linux_amd64/interpreters/python
+exec_prefix=/home/dai/projects/PhoenixBuilder/omega/components/omega_side/plantform_specific_python_/linux_amd64/interpreters/python
+libdir=/home/dai/projects/PhoenixBuilder/omega/components/omega_side/plantform_specific_python_/linux_amd64/interpreters/python/lib
+includedir=${prefix}/include
+
+Name: Tool Command Language
+Description: Tcl is a powerful, easy-to-learn dynamic programming language, suitable for a wide range of uses.
+URL: https://www.tcl-tk.org/
+Version: 8.6.12
+Requires.private: zlib >= 1.2.3
+Libs: -L${libdir} -ltcl8.6 -ltclstub8.6
+Libs.private: -ldl -lz  -lpthread -lm
+Cflags: -I${includedir}

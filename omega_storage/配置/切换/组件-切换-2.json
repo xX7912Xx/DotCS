@@ -1,0 +1,71 @@
+{
+	"名称": "切换",
+	"描述": "切换tag a->b->c->a",
+	"是否禁用": true,
+	"版本": "0.0.2",
+	"来源": "Built-In",
+	"配置": {
+		"可使用者身份验证": {
+			"依据名字": [
+				"2401PT",
+				"2402PT"
+			],
+			"启用身份验证": true
+		},
+		"按顺序匹配以下切换逻辑并执行第一个成功项": [
+			{
+				"参数匹配时触发": "",
+				"参数符合正则表达式时触发": "",
+				"备注": "当玩家具有 tag a 时变为 tag b",
+				"总是触发": false,
+				"触发指令": [
+					"tag [player] add b",
+					"tag [player] remove a",
+					"/tellraw [player] {\"rawtext\":[{\"text\":\"tag a->b ，你输入的参数为 [args]\"}]}"
+				],
+				"这条指令执行成功时触发": "testfor @a[name=[player],tag=a]"
+			},
+			{
+				"参数匹配时触发": "",
+				"参数符合正则表达式时触发": "",
+				"备注": "当玩家具有 tag b 时变为 tag c",
+				"总是触发": false,
+				"触发指令": [
+					"tag [player] add c",
+					"tag [player] remove b",
+					"/tellraw [player] {\"rawtext\":[{\"text\":\"tag b->c ，你输入的参数为 [args]\"}]}"
+				],
+				"这条指令执行成功时触发": "testfor @a[name=[player],tag=b]"
+			},
+			{
+				"参数匹配时触发": "",
+				"参数符合正则表达式时触发": "",
+				"备注": "当玩家具有 tag c 时变为 tag a",
+				"总是触发": false,
+				"触发指令": [
+					"tag [player] add a",
+					"tag [player] remove c",
+					"/tellraw [player] {\"rawtext\":[{\"text\":\"tag c->a ，你输入的参数为 [args]\"}]}"
+				],
+				"这条指令执行成功时触发": "testfor @a[name=[player],tag=c]"
+			},
+			{
+				"参数匹配时触发": "",
+				"参数符合正则表达式时触发": "",
+				"备注": "当玩家为 不具有上述任何 tag 时，给玩家 tag a",
+				"总是触发": true,
+				"触发指令": [
+					"tag [player] add a",
+					"/tellraw [player] {\"rawtext\":[{\"text\":\"tag ->a，你输入的参数为 [args]\"}]}"
+				],
+				"这条指令执行成功时触发": ""
+			}
+		],
+		"提示信息": "切换标签",
+		"没有给出参数时的默认参数": "",
+		"若需要参数则参数提示为": "",
+		"触发词": [
+			"切换标签"
+		]
+	}
+}

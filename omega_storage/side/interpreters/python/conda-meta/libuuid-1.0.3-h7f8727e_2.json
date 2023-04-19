@@ -1,0 +1,84 @@
+{
+  "build": "h7f8727e_2",
+  "build_number": 2,
+  "channel": "https://mirrors.bfsu.edu.cn/anaconda/pkgs/main/linux-64",
+  "constrains": [],
+  "depends": [
+    "libgcc-ng >=7.5.0"
+  ],
+  "extracted_package_dir": "/home/dai/envs/conda/pkgs/libuuid-1.0.3-h7f8727e_2",
+  "features": "",
+  "files": [
+    "include/uuid/uuid.h",
+    "lib/libuuid.a",
+    "lib/libuuid.so",
+    "lib/libuuid.so.1",
+    "lib/libuuid.so.1.0.0",
+    "lib/pkgconfig/uuid.pc"
+  ],
+  "fn": "libuuid-1.0.3-h7f8727e_2.conda",
+  "legacy_bz2_md5": "fda36b99463bad87974196da2d5bed08",
+  "license": "BSD 3-Clause",
+  "link": {
+    "source": "/home/dai/envs/conda/pkgs/libuuid-1.0.3-h7f8727e_2",
+    "type": 1
+  },
+  "md5": "6c4c9e96bfa4744d4839b9ed128e1114",
+  "name": "libuuid",
+  "package_tarball_full_path": "/home/dai/envs/conda/pkgs/libuuid-1.0.3-h7f8727e_2.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "include/uuid/uuid.h",
+        "path_type": "hardlink",
+        "sha256": "d6471ec814fdc0517f448d2b42d1fc5403eaf4b27124a1cf4e151b0fb73704da",
+        "sha256_in_prefix": "d6471ec814fdc0517f448d2b42d1fc5403eaf4b27124a1cf4e151b0fb73704da",
+        "size_in_bytes": 3297
+      },
+      {
+        "_path": "lib/libuuid.a",
+        "path_type": "hardlink",
+        "sha256": "cdcaf20dfe9d5491085ca9aa20f30f7e5b3cd1b8c6cedc99ca39b4ae76b24eb0",
+        "sha256_in_prefix": "cdcaf20dfe9d5491085ca9aa20f30f7e5b3cd1b8c6cedc99ca39b4ae76b24eb0",
+        "size_in_bytes": 29830
+      },
+      {
+        "_path": "lib/libuuid.so",
+        "path_type": "softlink",
+        "sha256": "4437678988b6349dcd5f07c2e86f27e87050577523a9d744e0776ef18ff981e7",
+        "size_in_bytes": 22480
+      },
+      {
+        "_path": "lib/libuuid.so.1",
+        "path_type": "softlink",
+        "sha256": "4437678988b6349dcd5f07c2e86f27e87050577523a9d744e0776ef18ff981e7",
+        "size_in_bytes": 22480
+      },
+      {
+        "_path": "lib/libuuid.so.1.0.0",
+        "path_type": "hardlink",
+        "sha256": "4437678988b6349dcd5f07c2e86f27e87050577523a9d744e0776ef18ff981e7",
+        "sha256_in_prefix": "4437678988b6349dcd5f07c2e86f27e87050577523a9d744e0776ef18ff981e7",
+        "size_in_bytes": 22480
+      },
+      {
+        "_path": "lib/pkgconfig/uuid.pc",
+        "file_mode": "text",
+        "path_type": "hardlink",
+        "prefix_placeholder": "/tmp/build/80754af9/libuuid_1633507809321/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeh",
+        "sha256": "d475e509788bfb0157fe8671a6a113189797269574a9ef0a10d02e9acde9b9c8",
+        "sha256_in_prefix": "3f8ca86d2996a291687d53c2aa4ed452319e0363085bc91b517a6964ceede534",
+        "size_in_bytes": 474
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "None",
+  "sha256": "78e174d87231225fd813bd13b281cf249e59d21cc32fb7717473c4f65163af1b",
+  "size": 17366,
+  "subdir": "linux-64",
+  "timestamp": 1633507857274,
+  "track_features": "",
+  "url": "https://mirrors.bfsu.edu.cn/anaconda/pkgs/main/linux-64/libuuid-1.0.3-h7f8727e_2.conda",
+  "version": "1.0.3"
+}

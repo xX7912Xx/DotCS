@@ -1,0 +1,16 @@
+{
+	"名称": "踢人",
+	"描述": "代替不能用的Kick指令踢人",
+	"是否禁用": false,
+	"版本": "0.0.1",
+	"来源": "Built-In",
+	"配置": {
+		"制裁": [
+			"/tellraw @a {\"rawtext\":[{\"text\":\"作弊玩家[player]已被踢出\"}]}",
+			"kick [player]",
+			"say 前往 omega_storage/配置/组件-踢人.json 配置"
+		],
+		"检查周期": 3,
+		"选择器": "@a[tag=cheat]"
+	}
+}

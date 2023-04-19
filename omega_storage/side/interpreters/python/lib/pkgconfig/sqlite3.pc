@@ -1,0 +1,13 @@
+# Package Information for pkg-config
+
+prefix=/home/dai/projects/PhoenixBuilder/omega/components/omega_side/plantform_specific_python_/linux_amd64/interpreters/python
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: SQLite
+Description: SQL database engine
+Version: 3.38.5
+Libs: -L${libdir} -lsqlite3
+Libs.private: -lz -lm -ldl -lpthread 
+Cflags: -I${includedir}

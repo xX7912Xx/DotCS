@@ -1,0 +1,93 @@
+{
+  "build": "h7f8727e_2",
+  "build_number": 2,
+  "channel": "https://mirrors.bfsu.edu.cn/anaconda/pkgs/main/linux-64",
+  "constrains": [],
+  "depends": [
+    "libgcc-ng >=7.5.0"
+  ],
+  "extracted_package_dir": "/home/dai/envs/conda/pkgs/zlib-1.2.12-h7f8727e_2",
+  "features": "",
+  "files": [
+    "include/zconf.h",
+    "include/zlib.h",
+    "lib/libz.a",
+    "lib/libz.so",
+    "lib/libz.so.1",
+    "lib/libz.so.1.2.12",
+    "lib/pkgconfig/zlib.pc"
+  ],
+  "fn": "zlib-1.2.12-h7f8727e_2.conda",
+  "legacy_bz2_md5": "601d9449c280b9b145dc8c83b6f06119",
+  "license": "Zlib",
+  "license_family": "Other",
+  "link": {
+    "source": "/home/dai/envs/conda/pkgs/zlib-1.2.12-h7f8727e_2",
+    "type": 1
+  },
+  "md5": "4f4080e9939f082332cd8be7fedad087",
+  "name": "zlib",
+  "package_tarball_full_path": "/home/dai/envs/conda/pkgs/zlib-1.2.12-h7f8727e_2.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "include/zconf.h",
+        "path_type": "hardlink",
+        "sha256": "289c8044a0e13ce2ea2183fe899f65c7ed8d091030b9c056ae6acdc39a8e1405",
+        "sha256_in_prefix": "289c8044a0e13ce2ea2183fe899f65c7ed8d091030b9c056ae6acdc39a8e1405",
+        "size_in_bytes": 16344
+      },
+      {
+        "_path": "include/zlib.h",
+        "path_type": "hardlink",
+        "sha256": "045cf777c6c9109b28ddcf3a413c5ca15e39fc513c13ef87bd9a3132a59d1b51",
+        "sha256_in_prefix": "045cf777c6c9109b28ddcf3a413c5ca15e39fc513c13ef87bd9a3132a59d1b51",
+        "size_in_bytes": 97317
+      },
+      {
+        "_path": "lib/libz.a",
+        "path_type": "hardlink",
+        "sha256": "edd7065dcdd547ce94efe6773e9f52aea3d129f6b9a95592767d2ed74f72d3c7",
+        "sha256_in_prefix": "edd7065dcdd547ce94efe6773e9f52aea3d129f6b9a95592767d2ed74f72d3c7",
+        "size_in_bytes": 185150
+      },
+      {
+        "_path": "lib/libz.so",
+        "path_type": "softlink",
+        "sha256": "0f2227fbbd6b38deee3071480657ec6aa86566ff10f139f1caa120d01df9e32b",
+        "size_in_bytes": 137560
+      },
+      {
+        "_path": "lib/libz.so.1",
+        "path_type": "softlink",
+        "sha256": "0f2227fbbd6b38deee3071480657ec6aa86566ff10f139f1caa120d01df9e32b",
+        "size_in_bytes": 137560
+      },
+      {
+        "_path": "lib/libz.so.1.2.12",
+        "path_type": "hardlink",
+        "sha256": "0f2227fbbd6b38deee3071480657ec6aa86566ff10f139f1caa120d01df9e32b",
+        "sha256_in_prefix": "0f2227fbbd6b38deee3071480657ec6aa86566ff10f139f1caa120d01df9e32b",
+        "size_in_bytes": 137560
+      },
+      {
+        "_path": "lib/pkgconfig/zlib.pc",
+        "file_mode": "text",
+        "path_type": "hardlink",
+        "prefix_placeholder": "/opt/conda/conda-bld/zlib_1650637682838/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehol",
+        "sha256": "a02f6b81ccb867d5df6f9289a725beba8a6dd48a496d70a00582a5d6dcd72413",
+        "sha256_in_prefix": "78726a204c25405fc9d24edb723b496fe7e826e5947ea2e2e99cd83ee6b1d94b",
+        "size_in_bytes": 1487
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "None",
+  "sha256": "d4aa8bdf122d3a53845db459d343c8b21ba51907d3c8dc5d2df3ff22dc98c6ca",
+  "size": 108625,
+  "subdir": "linux-64",
+  "timestamp": 1650637720646,
+  "track_features": "",
+  "url": "https://mirrors.bfsu.edu.cn/anaconda/pkgs/main/linux-64/zlib-1.2.12-h7f8727e_2.conda",
+  "version": "1.2.12"
+}

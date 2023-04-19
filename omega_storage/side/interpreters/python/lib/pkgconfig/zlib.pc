@@ -1,0 +1,13 @@
+prefix=/home/dai/projects/PhoenixBuilder/omega/components/omega_side/plantform_specific_python_/linux_amd64/interpreters/python
+exec_prefix=/home/dai/projects/PhoenixBuilder/omega/components/omega_side/plantform_specific_python_/linux_amd64/interpreters/python
+libdir=/home/dai/projects/PhoenixBuilder/omega/components/omega_side/plantform_specific_python_/linux_amd64/interpreters/python/lib
+sharedlibdir=/home/dai/projects/PhoenixBuilder/omega/components/omega_side/plantform_specific_python_/linux_amd64/interpreters/python/lib
+includedir=/home/dai/projects/PhoenixBuilder/omega/components/omega_side/plantform_specific_python_/linux_amd64/interpreters/python/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.12
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}

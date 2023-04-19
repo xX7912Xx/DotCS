@@ -1,0 +1,28 @@
+{
+	"名称": "时间同步",
+	"描述": "将游戏时间与现实时间同步，或者游戏计分板和现实计分板同步",
+	"是否禁用": false,
+	"版本": "0.0.1",
+	"来源": "Built-In",
+	"配置": {
+		"时区偏移(秒)": 0,
+		"现实时间同步": {
+			"不调整月相": false,
+			"同步指令发送周期": 90,
+			"启用现实时间同步": false,
+			"月相同步": true,
+			"锁定月相为": 0
+		},
+		"记分板校准": {
+			"启用记分板校准": true,
+			"校准指令": [
+				"tell @a[m=c] 时间记分板将校准为 [year]/[month]/[day] [h24]([h12]):[min]:[sec]",
+				"scoreboard players set 日期 time [day]",
+				"scoreboard players set 小时 time [h24]",
+				"scoreboard players set 分 time [min]",
+				"scoreboard players set 秒 time [sec]"
+			],
+			"校准指令发送周期": 3600
+		}
+	}
+}

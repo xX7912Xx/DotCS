@@ -1,0 +1,96 @@
+ZLIB_1.2.2 {
+global:
+adler32_combine;
+crc32_combine;
+deflateSetHeader;
+inflateGetHeader;
+};
+
+ZLIB_1.2.3.3 {
+global:
+adler32_combine64;
+crc32_combine64;
+gzopen64;
+gzseek64;
+gztell64;
+inflateUndermine;
+};
+
+ZLIB_1.2.9 {
+global:
+adler32_z;
+crc32_z;
+deflateGetDictionary;
+gzfread;
+gzfwrite;
+inflateCodesUsed;
+inflateValidate;
+uncompress2;
+};
+
+ZLIB_1.2.0 {
+global:
+compressBound;
+deflateBound;
+inflateBack;
+inflateBackEnd;
+inflateBackInit_;
+inflateCopy;
+};
+
+ZLIB_1.2.5.1 {
+global:
+deflatePending;
+};
+
+ZLIB_1.2.0.8 {
+global:
+deflatePrime;
+};
+
+ZLIB_1.2.5.2 {
+global:
+deflateResetKeep;
+gzgetc_;
+inflateResetKeep;
+};
+
+ZLIB_1.2.2.3 {
+global:
+deflateTune;
+gzdirect;
+};
+
+ZLIB_1.2.3.5 {
+global:
+gzbuffer;
+gzclose_r;
+gzclose_w;
+gzoffset;
+gzoffset64;
+};
+
+ZLIB_1.2.0.2 {
+global:
+gzclearerr;
+gzungetc;
+zlibCompileFlags;
+};
+
+ZLIB_1.2.7.1 {
+global:
+gzvprintf;
+inflateGetDictionary;
+};
+
+ZLIB_1.2.3.4 {
+global:
+inflateMark;
+inflateReset2;
+};
+
+ZLIB_1.2.2.4 {
+global:
+inflatePrime;
+};
+
