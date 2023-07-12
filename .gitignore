@@ -1,9 +1,0 @@
-
-# Ignore dynaconf secret files
-.secrets.*
-phoenixbuilder.exe
-build*
-dist*
-dotcsex.__pycache__.*
-__init__.spec
-__pycache__*
