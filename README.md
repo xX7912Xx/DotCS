@@ -15,7 +15,7 @@ xX7912Xx 遵循mit协议闭源编写了个软件,以xX7912Xx所发行软件则�
 
 > 本库仅存储社区版代码,请勿尝试 make 编译专业版以及探索版的代码。
 
-项目所依赖的库如下:
+项目所依赖的库如下:(golang部分,此表可能不全,本地依赖需要自行前往源代码中寻找)
 
 |            DEPENDENCY            |                 REPOURL                  |   LICENSE    |
 |----------------------------------|------------------------------------------|--------------|
@@ -42,4 +42,4 @@ xX7912Xx 遵循mit协议闭源编写了个软件,以xX7912Xx所发行软件则�
 | golang.org/x/sys                 |                                          |              |
 | golang.org/x/term                | https://go.googlesource.com/term         |              |
 | golang.org/x/text                | https://go.googlesource.com/text         |              |
-
+| golang.org/x/text                | https://go.googlesource.com/text         |              |
