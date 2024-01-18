@@ -1,0 +1,58 @@
+/*
+Request : EDotCS 客户端向插件发起的请求
+Reply : 插件回复EDotCS 是否执行成功
+
+*/
+syntax = "proto3";
+package edotcs;
+// go_package 使用 go mod 需要的路径即可，也可以是私有 gitlab package
+option go_package = "edotcs_api/grpc";
+// Listen 系列接口: 是由 EDotCS 客户端向 插件发送的内容
+service listen {
+    rpc Player_Message(stream Player_Message_Request) returns (Player_Message_Reply){}
+    
+}
+service Api{
+    rpc Say_To() returns (stream Say_To_Reply){} // 向xx 玩家发送消息
+    rpc SendCmd() returns (stream Say_To_Reply){} // 执行命令(不等待)
+    rpc SendWSCmd() returns (stream SendWSCmd_Reply){}// 通过ws接口执行命令(不等待)
+    rpc Log() returns (stream Log_Reply){} // 向EDotCS 发送日志
+    // rpc
+}
+// EDotCS Log(lever int,message) 发送一条日志(在EDotCS客户端内显示)
+message Log_Reply{
+    uint32 lever=1;
+    string message=2;
+}
+// EDotCS SendWSCmd(cmd string) 执行一条命令(通过WS)(不需要返回结果)
+message SendWSCmd_Reply{
+    string cmd=1;
+}
+// EDotCS SendCmd(cmd string) 执行一条命令(不需要返回结果)
+message SendCmd_Reply{
+    string cmd=1;
+}
+// EDotCS Say_To(player,message) 向玩家发送一条消息(不支持 @a)
+message Say_To_Request{
+    bool is_ture =1;
+    string message =2;
+}
+message Say_To_Reply{
+    Player Player=1;
+    string message=2;
+}
+
+// EDotCS 玩家消息处理
+message Player_Message_Request{
+    Player player = 1;
+    string message = 2;
+}
+message Player_Message_Reply{
+    bool is_ture = 1;
+    string message =2;
+}
+
+message Player{
+    string uuid =1;
+    string name =2;
+}
