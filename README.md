@@ -1,40 +1,30 @@
-# DotCS
-".命令"系统 - 社区版
+# EDotCS
+边缘 ".命令"系统
 
-版本:6.1.0
+> 版本:0.0.1a4
 
-使用本项目时,请遵循 Apache License 2.0 许可证。
+EDotCS 是一款我的世界租赁服伪插件运行工具。其作用是让玩家可以在租赁服中实现更多功能。
 
-MIT协议需要付费授权。
+> [!TIP]
+> EDotCS 系列源码不开源,但是插件SDK开源。
+> 
+> 也就意味着没有社区版 EDotCS 了(被标准许可证代替)
+> 
+> EDotCS 专业许可证和普通许可证在EDotCS中是一样的,只有验证服务的区别。
+> 
+## 插件支持
+目前计划开发的官方插件SDK
+| 编程语言 | 支持情况 |
+| ---|---|
+| python | 开发中 |
+| Golang | 尚未开始 |
+| Rust | 尚未支持 |
+| OpenEX | 尚未支持 |
+| Java | 尚未支持 |
+| C++ | 尚未支持 |
+| C | 尚未支持 |
+| C# | 尚未支持 |
+| 易语言 | 不支持 |
 
-
-> 本库仅存储社区版代码,请勿尝试 make 编译专业版以及探索版的代码。
-
-项目所依赖的库如下:(golang部分,此表可能不全,本地依赖需要自行前往源代码中寻找)
-
-|            DEPENDENCY            |                 REPOURL                  |   LICENSE    |
-|----------------------------------|------------------------------------------|--------------|
-| atomicgo.dev/cursor              | https://github.com/atomicgo/cursor       | MIT          |
-| atomicgo.dev/keyboard            | https://github.com/atomicgo/keyboard     | MIT          |
-| atomicgo.dev/schedule            | https://github.com/atomicgo/schedule     | MIT          |
-| github.com/c-bata/go-prompt      | https://github.com/c-bata/go-prompt      | MIT          |
-| github.com/containerd/console    | https://github.com/containerd/console    | Apache-2.0   |
-| github.com/df-mc/atomic          | https://github.com/df-mc/atomic          | MIT          |
-| github.com/gookit/color          | https://github.com/gookit/color          | MIT          |
-| github.com/gorilla/websocket     | https://github.com/gorilla/websocket     | bsd-2-clause |
-| github.com/jessevdk/go-flags     | https://github.com/jessevdk/go-flags     | bsd-3-clause |
-| github.com/lithammer/fuzzysearch | https://github.com/lithammer/fuzzysearch | MIT          |
-| github.com/mattn/go-colorable    | https://github.com/mattn/go-colorable    | MIT          |
-| github.com/mattn/go-isatty       | https://github.com/mattn/go-isatty       | MIT          |
-| github.com/mattn/go-runewidth    | https://github.com/mattn/go-runewidth    | MIT          |
-| github.com/mattn/go-tty          | https://github.com/mattn/go-tty          | MIT          |
-| github.com/pkg/term              | https://github.com/pkg/term              | bsd-2-clause |
-| github.com/pterm/pterm           | https://github.com/pterm/pterm           | MIT          |
-| github.com/rivo/uniseg           | https://github.com/rivo/uniseg           | MIT          |
-| github.com/sandertv/go-raknet    | https://github.com/sandertv/go-raknet    | MIT          |
-| github.com/xo/terminfo           | https://github.com/xo/terminfo           | MIT          |
-| golang.org/x/net                 |                                          |              |
-| golang.org/x/sys                 |                                          |              |
-| golang.org/x/term                | https://go.googlesource.com/term         |              |
-| golang.org/x/text                | https://go.googlesource.com/text         |              |
-| golang.org/x/text                | https://go.googlesource.com/text         |              |
+## 如何自己开发官方不支持的插件SDK?
+您可以通过自行编译EDotCS的 [grpc](grpc) 文件来实现SDK,EDotCS 插件都是通过[grpc](grpc) 进行通信的。有关如何在自己喜欢的编程语言里面进行编译请自行解决.
