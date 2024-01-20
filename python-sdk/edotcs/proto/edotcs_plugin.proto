@@ -49,8 +49,6 @@ message Player_Message_Request{
     int64 id=3;
 }
 message Player_Message_Reply{
-    bool is_ture = 1;
-    string message =2;
 }
 
 message Player{
@@ -173,17 +171,17 @@ message EDotCS_Client_New_Reply{
 // 这里的事件比较特殊,在返回后另执行一条命令来告知是否执行成功,通常通知类消息命名以 _Return 结尾
 // Listen 系列接口: 是由 EDotCS 客户端向 插件发送的内容
 service Initialize{
-    rpc EDotCS_Client_New(EDotCS_Client_New_Request) returns (EDotCS_Client_New_Reply){}//新建 EDotCS 客户端
+    rpc EDotCS_Client_New(EDotCS_Client_New_Request) returns (EDotCS_Client_New_Reply){} //新建 EDotCS 客户端
     rpc Menu_Set(Menu_Set_Request) returns (Menu_Set_Reply){} // EDotCS 菜单系统设置(每一个插件只能有一个菜单)
     rpc Menu_Set_Return(Menu_Set_Return_Request) returns (Menu_Set_Return_Reply){} // 返回结果
     rpc License(License_Request) returns (License_Reply){} // 许可证要求,此接口较为特殊,如果不达到要求就不会返回结果,而是直接关闭插件连接
     rpc Plugin_Name(Plugin_Name_Request)returns(Plugin_Name_Reply){} // 插件名称初始化,这必须完成
 }
 service listen {
-    rpc Player_Message(stream Player_Message_Request) returns (Player_Message_Reply){}
-    rpc Player_Join(stream Plyaer_Join_Request) returns (Plyaer_Join_Reply){}
-    rpc Player_Left(stream Player_Left_Request) returns (Player_Left_Reply){}
-    rpc User_Command(stream User_Command_Request) returns (User_Command_Reply){}
+    rpc Player_Message(Player_Message_Request) returns (Player_Message_Reply){}
+    rpc Player_Join(Plyaer_Join_Request) returns (Plyaer_Join_Reply){}
+    rpc Player_Left(Player_Left_Request) returns (Player_Left_Reply){}
+    rpc User_Command(User_Command_Request) returns (User_Command_Reply){}
     rpc Robot_Exit_Server(Robot_Exit_Request) returns (Robot_Exit_Reply){} // EDotCS 机器人退出了租赁服
     rpc heartbeat(heartbeat_Request)returns(heartbeat_Reply){}
 }

@@ -216,22 +216,22 @@ class listenStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.Player_Message = channel.stream_unary(
+        self.Player_Message = channel.unary_unary(
                 '/edotcs.listen/Player_Message',
                 request_serializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.Player_Message_Request.SerializeToString,
                 response_deserializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.Player_Message_Reply.FromString,
                 )
-        self.Player_Join = channel.stream_unary(
+        self.Player_Join = channel.unary_unary(
                 '/edotcs.listen/Player_Join',
                 request_serializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.Plyaer_Join_Request.SerializeToString,
                 response_deserializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.Plyaer_Join_Reply.FromString,
                 )
-        self.Player_Left = channel.stream_unary(
+        self.Player_Left = channel.unary_unary(
                 '/edotcs.listen/Player_Left',
                 request_serializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.Player_Left_Request.SerializeToString,
                 response_deserializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.Player_Left_Reply.FromString,
                 )
-        self.User_Command = channel.stream_unary(
+        self.User_Command = channel.unary_unary(
                 '/edotcs.listen/User_Command',
                 request_serializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.User_Command_Request.SerializeToString,
                 response_deserializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.User_Command_Reply.FromString,
@@ -251,25 +251,25 @@ class listenStub(object):
 class listenServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def Player_Message(self, request_iterator, context):
+    def Player_Message(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def Player_Join(self, request_iterator, context):
+    def Player_Join(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def Player_Left(self, request_iterator, context):
+    def Player_Left(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def User_Command(self, request_iterator, context):
+    def User_Command(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -290,22 +290,22 @@ class listenServicer(object):
 
 def add_listenServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'Player_Message': grpc.stream_unary_rpc_method_handler(
+            'Player_Message': grpc.unary_unary_rpc_method_handler(
                     servicer.Player_Message,
                     request_deserializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.Player_Message_Request.FromString,
                     response_serializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.Player_Message_Reply.SerializeToString,
             ),
-            'Player_Join': grpc.stream_unary_rpc_method_handler(
+            'Player_Join': grpc.unary_unary_rpc_method_handler(
                     servicer.Player_Join,
                     request_deserializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.Plyaer_Join_Request.FromString,
                     response_serializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.Plyaer_Join_Reply.SerializeToString,
             ),
-            'Player_Left': grpc.stream_unary_rpc_method_handler(
+            'Player_Left': grpc.unary_unary_rpc_method_handler(
                     servicer.Player_Left,
                     request_deserializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.Player_Left_Request.FromString,
                     response_serializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.Player_Left_Reply.SerializeToString,
             ),
-            'User_Command': grpc.stream_unary_rpc_method_handler(
+            'User_Command': grpc.unary_unary_rpc_method_handler(
                     servicer.User_Command,
                     request_deserializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.User_Command_Request.FromString,
                     response_serializer=edotcs_dot_grpc_dot_edotcs__plugin__pb2.User_Command_Reply.SerializeToString,
@@ -331,7 +331,7 @@ class listen(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def Player_Message(request_iterator,
+    def Player_Message(request,
             target,
             options=(),
             channel_credentials=None,
@@ -341,14 +341,14 @@ class listen(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/edotcs.listen/Player_Message',
+        return grpc.experimental.unary_unary(request, target, '/edotcs.listen/Player_Message',
             edotcs_dot_grpc_dot_edotcs__plugin__pb2.Player_Message_Request.SerializeToString,
             edotcs_dot_grpc_dot_edotcs__plugin__pb2.Player_Message_Reply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def Player_Join(request_iterator,
+    def Player_Join(request,
             target,
             options=(),
             channel_credentials=None,
@@ -358,14 +358,14 @@ class listen(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/edotcs.listen/Player_Join',
+        return grpc.experimental.unary_unary(request, target, '/edotcs.listen/Player_Join',
             edotcs_dot_grpc_dot_edotcs__plugin__pb2.Plyaer_Join_Request.SerializeToString,
             edotcs_dot_grpc_dot_edotcs__plugin__pb2.Plyaer_Join_Reply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def Player_Left(request_iterator,
+    def Player_Left(request,
             target,
             options=(),
             channel_credentials=None,
@@ -375,14 +375,14 @@ class listen(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/edotcs.listen/Player_Left',
+        return grpc.experimental.unary_unary(request, target, '/edotcs.listen/Player_Left',
             edotcs_dot_grpc_dot_edotcs__plugin__pb2.Player_Left_Request.SerializeToString,
             edotcs_dot_grpc_dot_edotcs__plugin__pb2.Player_Left_Reply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def User_Command(request_iterator,
+    def User_Command(request,
             target,
             options=(),
             channel_credentials=None,
@@ -392,7 +392,7 @@ class listen(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/edotcs.listen/User_Command',
+        return grpc.experimental.unary_unary(request, target, '/edotcs.listen/User_Command',
             edotcs_dot_grpc_dot_edotcs__plugin__pb2.User_Command_Request.SerializeToString,
             edotcs_dot_grpc_dot_edotcs__plugin__pb2.User_Command_Reply.FromString,
             options, channel_credentials,
