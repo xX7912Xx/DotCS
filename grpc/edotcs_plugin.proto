@@ -11,32 +11,42 @@ option go_package = "edotcs_api/grpc";
 
 // EDotCS 机器人退出了租赁服
 message Robot_Exit_Request{
+    
     string Exit_Server_message =1; // 退出租赁服的原因
+    int64 id=2;
 }
 message Robot_Exit_Reply{
 }
 // EDotCS 用户中心命令(由用户中心向插件执行命令)
 message User_Command_Request{
+    
     string cmd = 1;
+    int64 id=2;
 }
 message User_Command_Reply{
 }
 // EDotCS 玩家退出了服务器
 message Player_Left_Request{
+    
     Player Player =1;
+    int64 id=2;
 }
 message Player_Left_Reply{
 }
 // EDotCS 玩家加入服务器(可能会出现插件黑名单提前踢出服务器的处理)
 message Plyaer_Join_Request{
+    
     Player Player =1;
+    int64 id=2;
 }
 message Plyaer_Join_Reply{
 }
 // EDotCS 玩家消息处理
 message Player_Message_Request{
+    
     Player player = 1;
     string message = 2;
+    int64 id=3;
 }
 message Player_Message_Reply{
     bool is_ture = 1;
@@ -52,12 +62,14 @@ message Player{
 // EDotCS Ban(player player) 在机器人所在的服务器里永久禁止此玩家进入(无法解封)
 // 注:为了防止乱封禁,上传需要有效正确的玩家信息
 message Ban_Request{
+    int64 id=1;
 }
 message Ban_Reply{
     Player Player=1;
 }
 // EDotCS Log(lever int,message) 发送一条日志(在EDotCS客户端内显示)
 message Log_Request{
+    int64 id=1;
 }
 message Log_Reply{
     uint32 lever=1;
@@ -65,18 +77,21 @@ message Log_Reply{
 }
 // EDotCS SendWSCmd(cmd string) 执行一条命令(通过WS)(不需要返回结果)
 message SendWSCmd_Request{
+    int64 id=1;
 }
 message SendWSCmd_Reply{
     string cmd=1;
 }
 // EDotCS SendCmd(cmd string) 执行一条命令(不需要返回结果)
 message SendCmd_Request{
+    int64 id=1;
 }
 message SendCmd_Reply{
     string cmd=1;
 }
 // EDotCS Say_To(player,message) 向玩家发送一条消息(不支持 @a)
 message Say_To_Request{
+    int64 id=1;
 }
 message Say_To_Reply{
     Player Player=1;
@@ -89,6 +104,7 @@ message Say_To_Reply{
 // 让插件有一个属于自己的菜单选项
 // 注: 没有插件选项时,请返回 空字符串
 message Menu_Set_Request{
+    int64 id=1;
     // bool is_ture = 1;
     // string message =2;
 }
@@ -97,8 +113,10 @@ message Menu_Set_Reply{
     string synopsis = 2;
 }
 message Menu_Set_Return_Request{
+    
     bool is_ture=1;
     string message =2;
+    int64 id=3;
 }
 message Menu_Set_Return_Reply{
 
@@ -117,21 +135,49 @@ message Menu_Set_Return_Reply{
 8: 用户中心总管理许可证要求
 */
 message License_Request{
+    int64 id=1;
 
 }
 message License_Reply{
     int32 license=1;
 
 }
+// 插件名初始化,EDotCS 客户端第一个执行的接口
+message Plugin_Name_Request{
+    int64 id=1;
+
+}
+message Plugin_Name_Reply{
+    string name=1; // 插件名
+    string author=2; // 作者
+}
+// 心跳包,来保证插件可以正确识别edotcs是否在正常运行
+message heartbeat_Request{
+    int64 id=1;
+}
+message heartbeat_Reply{
+
+}
+// 新建EDotCS客户端,
 // 初始化事件
+// 新启动的edotcs的id默认提交的是0,如果id不是0就是重连的了。
+// 插件需要返回一个id告知edotcs
+message EDotCS_Client_New_Request{
+    
+    int64 id=1;
+}
+message EDotCS_Client_New_Reply{
+    int64 id=1;
+}
 // 在EDotCS 连接完成插件后,就会对插件进行初始化
 // 这里的事件比较特殊,在返回后另执行一条命令来告知是否执行成功,通常通知类消息命名以 _Return 结尾
 // Listen 系列接口: 是由 EDotCS 客户端向 插件发送的内容
 service Initialize{
+    rpc EDotCS_Client_New(EDotCS_Client_New_Request) returns (EDotCS_Client_New_Reply){}//新建 EDotCS 客户端
     rpc Menu_Set(Menu_Set_Request) returns (Menu_Set_Reply){} // EDotCS 菜单系统设置(每一个插件只能有一个菜单)
     rpc Menu_Set_Return(Menu_Set_Return_Request) returns (Menu_Set_Return_Reply){} // 返回结果
-
     rpc License(License_Request) returns (License_Reply){} // 许可证要求,此接口较为特殊,如果不达到要求就不会返回结果,而是直接关闭插件连接
+    rpc Plugin_Name(Plugin_Name_Request)returns(Plugin_Name_Reply){} // 插件名称初始化,这必须完成
 }
 service listen {
     rpc Player_Message(stream Player_Message_Request) returns (Player_Message_Reply){}
@@ -139,6 +185,7 @@ service listen {
     rpc Player_Left(stream Player_Left_Request) returns (Player_Left_Reply){}
     rpc User_Command(stream User_Command_Request) returns (User_Command_Reply){}
     rpc Robot_Exit_Server(Robot_Exit_Request) returns (Robot_Exit_Reply){} // EDotCS 机器人退出了租赁服
+    rpc heartbeat(heartbeat_Request)returns(heartbeat_Reply){}
 }
 // API 系列接口: 是由插件主动向EDotCS 客户端执行命令的接口
 service Api{
