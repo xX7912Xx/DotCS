@@ -1,0 +1,1 @@
+python -m grpc_tools.protoc -Iedotcs/grpc=edotcs\proto --python_out=. edotcs\proto\edotcs.proto
