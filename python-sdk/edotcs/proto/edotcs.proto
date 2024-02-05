@@ -1,0 +1,102 @@
+/*
+新版较为特殊,这里都是只表达数据包结构
+
+*/
+syntax = "proto3";
+package edotcs;
+// go_package 使用 go mod 需要的路径即可，也可以是私有 gitlab package
+option go_package = "edotcs_api/grpc";
+// =============================
+// 初始化消息注册
+// =============================
+// 注册消息
+message New_Type{
+    string Type=1;// 注册消息类型
+    string Name=2;// 注册消息名称
+    string Description=3;// 注册消息描述
+}
+// 消息列表
+message Type_list{
+    repeated New_Type Types=1;// 注册消息列表
+}
+// =============================
+// 基础消息事件
+// =============================
+/*
+插件初始化第一个发送的数据包
+*/
+message Plugin {
+    string Name =1;// 插件名称
+    string Author =2;//插件作者
+    Version Version=3;//插件版本
+    optional string recommendation=4;//插件介绍
+    optional string menu_word=5;// 插件菜单关键词(以htp为例, .htp )
+    optional string menu_recommendation=6;// 插件菜单关键词介绍
+}
+/*
+玩家消息
+*/
+message Player_Message{
+    string Player=1;// 玩家名
+    string Message=2;// 玩家消息
+}
+/*
+玩家进入租赁服事件
+*/
+message Player_join{
+    string Player=1;// 玩家名 
+}
+/*
+玩家退出租赁服事件
+*/
+message Player_Left{
+    string Player=1;// 玩家名 
+}
+/*
+玩家使用菜单功能事件
+*/
+message Menu{
+    repeated string word=1;
+    string Player=2;// 玩家名 
+}
+/*
+q群消息
+*/
+message Group_Message{
+    string Message_ID=1;// 消息ID
+    string Sender=2;// 发送者
+    string Message=3;// 消息内容
+    string Time=4;// 发送时间
+}
+
+// 心跳包
+message Heart_Beat{
+    string Name=1;// 心跳包名称
+}
+// =============================
+// 客户端事件
+// =============================
+/*
+执行命令
+*/
+message SendCmd{
+    string Command=1;// 命令内容
+}
+/*
+发送消息给指定玩家
+*/
+message Say_To{
+    string Player=1;// 玩家名
+    string Message=2;// 发送消息内容
+}
+
+// =============================
+// 基础数据类型
+// =============================
+
+// 插件版本,采用 x.y.z 命名规则
+message Version {
+    int64 Major=1;
+    int64 Minor=2;
+    int64 Patch=3;
+}
