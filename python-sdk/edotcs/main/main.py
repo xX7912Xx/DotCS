@@ -5,19 +5,21 @@ from loguru import logger
 import aiohttp
 from .. import grpc
 from . import path as _path
-
+from .. import type
 class EDotCS:
     def __init__(self,name:str,author:str,ip:str="127.0.0.1:8080",menu_key="",menu_tip="",version=[1,0,0],description="",*tuple,**kwargs):
         """
-        启动 EDotCS 插件(建议继承EDotCS类来修改函数)
-        ================
-        name: 插件名称
-        author: 插件作者
-        ip: 插件运行的IP地址，默认为127.0.0.1
-        menu_key: 插件菜单的快捷键，默认为""
-        menu_tip: 插件菜单的提示信息，默认为""
-        *tuple: 其他参数，可以传入任意数量的元组参数
-        **kwargs: 其他参数，可以传入任意数量的关键字参数
+        插件初始化
+
+        :param name: 插件名称
+        :param author: 插件作者
+        :param ip: 插件IP地址
+        :param menu_key: 插件菜单快捷键
+        :param menu_tip: 插件菜单提示信息
+        :param version: 插件版本
+        :param description: 插件介绍
+        :param tuple: 插件运行所需的其他参数
+        :param kwargs: 插件运行所需的其他参数
         """
 
         # 定义插件名称、作者、IP、端口、菜单快捷键、菜单提示信息
@@ -76,7 +78,7 @@ class EDotCS:
         if os.path.isdir(LOG_DIR)==False:
             self.logger.info("日志文件夹缺失,已自动创建")
             os.makedirs(LOG_DIR)
-        logger.add(LOG_FILE, rotation = "256KB")
+        logger.add(LOG_FILE, rotation = "16MB")
         self.logger.success("日志初始化成功")
     async def __aenter__(self):
         self.log_init()
@@ -114,6 +116,27 @@ class EDotCS:
         "发送MC全体消息"
         async with self.session.post("/dotcs/v8/sayto",data=grpc.edotcs_pb2.Say_To(Player="@a",Message=msg).SerializeToString()) as response:
             return response
+    async def Get_Player_List(self)->type.get_player.GetPlayerList:
+        "获取MC玩家列表"
+        async with self.session.post("/dotcs/v8/getplayerlist",data=grpc.edotcs_pb2.Get_Online_Player_Info().SerializeToString()) as response:
+            data = await response.read()
+            message = grpc.edotcs_pb2.Return_Online_Player_Info()
+            message.ParseFromString(data)
+            player_list = []
+            if message.Is_True:
+                for player in message.Players:
+                    player_list.append(type.get_player.Player(name=player.Player,uuid=player.UUID))
+            return_data = type.get_player.GetPlayerList(success=message.Is_True,message=message.message,players=player_list)
+            return return_data
+    async def Get_Player(self,player:str)->type.get_player.GetPlayer:
+        "获取玩家信息"
+        async with self.session.post("/dotcs/v8/getplayer",data=grpc.edotcs_pb2.Get_Player_Info(Player=player).SerializeToString()) as response:
+            data = await response.read()
+            message = grpc.edotcs_pb2.Return_Player_Info()
+            message.ParseFromString(data)
+            return_data = type.get_player.GetPlayer(success=message.Is_True,message=message.message,player=type.get_player.Player(name=message.Player.Player,uuid=message.Player.UUID))
+            return return_data
+    
     async def listen(self):
         "监听 EDotCS 客户端 发送的数据包"
 

@@ -90,6 +90,34 @@ message Say_To{
     string Message=2;// 发送消息内容
 }
 
+/*
+获取玩家信息
+*/
+message Get_Player_Info{    
+    string Player=1;// 玩家名
+}
+/*
+返回玩家信息
+*/
+message Return_Player_Info{
+    bool Is_True=1;// 是否获取成功
+    string message=2;// 获取失败原因
+    Plugin_Info_Player Player=3;// 玩家信息
+}
+/*
+获取在线玩家信息
+*/
+message Get_Online_Player_Info{    
+    
+}
+/*
+返回在线玩家信息
+*/
+message Return_Online_Player_Info{
+    bool Is_True=1;// 是否获取成功
+    string message=2;// 获取失败原因
+    repeated Plugin_Info_Player Players=3;// 在线玩家信息
+}
 // =============================
 // 基础数据类型
 // =============================
@@ -99,4 +127,8 @@ message Version {
     int64 Major=1;
     int64 Minor=2;
     int64 Patch=3;
+}
+message Plugin_Info_Player{
+    string Player=1;// 玩家名
+    string UUID=2;// 玩家UUID
 }
