@@ -1,0 +1,165 @@
+/*
+新版较为特殊,这里都是只表达数据包结构
+
+*/
+syntax = "proto3";
+package edotcs;
+// go_package 使用 go mod 需要的路径即可，也可以是私有 gitlab package
+option go_package = "edotcs_api/grpc";
+// =============================
+// 初始化消息注册
+// =============================
+// 注册消息
+message New_Type{
+    string Type=1;// 注册消息类型
+    string Name=2;// 注册消息名称
+    string Description=3;// 注册消息描述
+}
+// 消息列表
+message Type_list{
+    repeated New_Type Types=1;// 注册消息列表
+}
+// =============================
+// 基础消息事件
+// =============================
+/*
+插件初始化第一个发送的数据包
+*/
+message Plugin {
+    string Name =1;// 插件名称
+    string Author =2;//插件作者
+    Version Version=3;//插件版本
+    optional string recommendation=4;//插件介绍
+    optional string menu_word=5;// 插件菜单关键词(以htp为例, .htp )
+    optional string menu_recommendation=6;// 插件菜单关键词介绍
+}
+/*
+玩家消息
+*/
+message Player_Message{
+    string Player=1;// 玩家名
+    string Message=2;// 玩家消息
+}
+/*
+玩家进入租赁服事件
+*/
+message Player_join{
+    string Player=1;// 玩家名 
+}
+/*
+玩家退出租赁服事件
+*/
+message Player_Left{
+    string Player=1;// 玩家名 
+}
+/*
+玩家使用菜单功能事件
+*/
+message Menu{
+    repeated string word=1;
+    string Player=2;// 玩家名 
+}
+/*
+玩家私聊机器人事件
+*/
+message Player_Whisper{
+    string Player=1;// 玩家名
+    string Message=2;// 玩家消息
+}
+/*
+更新NBT方块事件 BlockActorData
+*/
+message BlockActorData{
+    BlockPos Position=1;// 方块位置
+    bytes NBT_Data=2;// NBT数据
+}
+/*
+系统消息
+*/
+message System_Message{
+    bool    NeedsTranslation=1;
+   string SourceName=2;
+    string  Message=3;
+    repeated string Parameters=4;
+    string XUID =5;
+    string PlatformChatID =6;
+    string PlayerRuntimeID =7;
+}
+/*
+q群消息
+*/
+message Group_Message{
+    string Message_ID=1;// 消息ID
+    string Sender=2;// 发送者
+    string Message=3;// 消息内容
+    string Time=4;// 发送时间
+}
+
+// 心跳包
+message Heart_Beat{
+    string Name=1;// 心跳包名称
+}
+// =============================
+// 客户端事件
+// =============================
+/*
+执行命令
+*/
+message SendCmd{
+    string Command=1;// 命令内容
+}
+/*
+发送消息给指定玩家
+*/
+message Say_To{
+    string Player=1;// 玩家名
+    string Message=2;// 发送消息内容
+}
+
+/*
+获取玩家信息
+*/
+message Get_Player_Info{    
+    string Player=1;// 玩家名
+}
+/*
+返回玩家信息
+*/
+message Return_Player_Info{
+    bool Is_True=1;// 是否获取成功
+    string message=2;// 获取失败原因
+    Plugin_Info_Player Player=3;// 玩家信息
+}
+/*
+获取在线玩家信息
+*/
+message Get_Online_Player_Info{    
+    
+}
+/*
+返回在线玩家信息
+*/
+message Return_Online_Player_Info{
+    bool Is_True=1;// 是否获取成功
+    string message=2;// 获取失败原因
+    repeated Plugin_Info_Player Players=3;// 在线玩家信息
+}
+// =============================
+// 基础数据类型
+// =============================
+
+// 插件版本,采用 x.y.z 命名规则
+message Version {
+    int64 Major=1;
+    int64 Minor=2;
+    int64 Patch=3;
+}
+message Plugin_Info_Player{
+    string Player=1;// 玩家名
+    string UUID=2;// 玩家UUID
+}
+message BlockPos{
+    int32 X=1;
+    int32 Y=2;
+    int32 Z=3;
+}
